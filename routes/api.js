@@ -171,6 +171,7 @@ router.post('/auth/register', async (req, res) => {
     const token = jwt.sign({ id, email: email.toLowerCase().trim(), name: userName }, JWT_SECRET, { expiresIn: '7d' });
     res.status(201).json({
       access_token: token,
+      token,
       token_type: 'bearer',
       user: { id, name: userName, email: email.toLowerCase().trim() }
     });
@@ -192,6 +193,7 @@ router.post('/auth/login', async (req, res) => {
     const token = jwt.sign({ id: user.id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '7d' });
     res.json({
       access_token: token,
+      token,
       token_type: 'bearer',
       user: { id: user.id, name: user.name, email: user.email }
     });
@@ -455,7 +457,7 @@ router.post('/analysis', authMiddleware, async (req, res) => {
   }
 });
 
-router.get(['/analysis/history', '/analysis'], optionalAuth, async (req, res) => {
+router.get(['/analysis/history', '/analysis', '/history'], optionalAuth, async (req, res) => {
   try {
     const rows = await dbAll(
       `SELECT a.*, r.overall_status, u.filename as upload_filename, u.filepath as upload_filepath
@@ -467,55 +469,17 @@ router.get(['/analysis/history', '/analysis'], optionalAuth, async (req, res) =>
       [req.user.id]
     );
 
-    let items = rows.map(r => ({
+    const items = rows.map(r => ({
       id: r.id,
       title: r.title,
       status: r.status || 'completed',
-      overall_status: r.overall_status || 'Review Required',
+      overall_status: r.overall_status || 'completed',
       modules: r.selected_modules ? JSON.parse(r.selected_modules) : ['chest_xray'],
       filename: r.upload_filename || 'Medical File',
       filepath: r.upload_filepath ? `/uploads/${r.upload_filepath}` : null,
       created_at: r.created_at,
       completed_at: r.completed_at || r.created_at
     }));
-
-    if (items.length === 0) {
-      const anyRows = await dbAll(
-        `SELECT a.*, r.overall_status, u.filename as upload_filename, u.filepath as upload_filepath
-         FROM analyses a
-         LEFT JOIN results r ON a.id = r.analysis_id
-         LEFT JOIN uploads u ON a.id = u.analysis_id
-         ORDER BY a.created_at DESC LIMIT 5`
-      );
-      if (anyRows.length > 0) {
-        items = anyRows.map(r => ({
-          id: r.id,
-          title: r.title,
-          status: r.status || 'completed',
-          overall_status: r.overall_status || 'Review Required',
-          modules: r.selected_modules ? JSON.parse(r.selected_modules) : ['chest_xray'],
-          filename: r.upload_filename || 'Medical File',
-          filepath: r.upload_filepath ? `/uploads/${r.upload_filepath}` : null,
-          created_at: r.created_at,
-          completed_at: r.completed_at || r.created_at
-        }));
-      }
-    }
-
-    if (items.length === 0) {
-      items = [
-        {
-          id: 'analysis_demo_1',
-          title: 'Chest Radiograph Review',
-          status: 'completed',
-          overall_status: 'No Significant Finding Detected by Model',
-          modules: ['chest_xray'],
-          filename: 'sample_chest_xray.jpg',
-          created_at: new Date().toISOString(),
-          completed_at: new Date().toISOString()
-        }
-      ];
-    }
 
     res.json(items);
   } catch (err) {

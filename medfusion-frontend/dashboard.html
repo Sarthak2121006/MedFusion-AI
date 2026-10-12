@@ -164,17 +164,6 @@
 
             <div id="timeline-root" class="space-y-6">
               <!-- Dynamically populated timeline milestones -->
-              <div class="flex gap-4">
-                <div class="flex flex-col items-center">
-                  <div class="h-3.5 w-3.5 rounded-full bg-teal-400 border-2 border-slate-950"></div>
-                  <div class="w-0.5 flex-1 bg-slate-800 mt-1"></div>
-                </div>
-                <div class="pb-2">
-                  <span data-i18n="dash_timeline_date" class="text-xs font-semibold text-slate-400">October 2026</span>
-                  <h4 data-i18n="dash_timeline_item_title" class="text-sm font-bold text-white mt-0.5">Chest X-ray Health Summary Generated</h4>
-                  <p data-i18n="dash_timeline_item_desc" class="text-xs text-slate-400 mt-1 leading-relaxed">AI diagnostic evaluation completed for uploaded radiograph. Slight shadow in lower right lung zone flagged for clinician review.</p>
-                </div>
-              </div>
             </div>
           </article>
         </div>
@@ -213,13 +202,13 @@
               <span class="h-2 w-2 rounded-full bg-teal-400 animate-pulse"></span>
               <span data-i18n="dash_ai_badge">AI-Assisted Intelligence</span>
             </div>
-            <h3 id="insight-title" data-i18n="dash_ai_title" class="text-base font-bold text-white mb-2">Review Recommended for Recent Chest Radiograph</h3>
-            <p id="insight-body" data-i18n="dash_ai_body" class="text-xs text-slate-300 leading-relaxed mb-4">Your uploaded chest radiograph contains subtle density findings in the lower right lung field that warrant qualified doctor review.</p>
+            <h3 id="insight-title" data-i18n="dash_ai_title" class="text-base font-bold text-white mb-2">Ready for Your Health Analysis</h3>
+            <p id="insight-body" data-i18n="dash_ai_body" class="text-xs text-slate-300 leading-relaxed mb-4">Upload chest X-rays, skin lesions, bone radiographs, or laboratory blood tests to generate unified AI health summaries.</p>
             <div data-i18n="dash_ai_disclaimer" class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-[11px] text-slate-400 mb-5 leading-snug">
               This is an AI-assisted informational review and does not replace clinical diagnosis.
             </div>
-            <a href="results.html" class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-teal-500 hover:bg-teal-400 text-white font-bold text-xs shadow-md transition-all">
-              <span data-i18n="dash_ai_btn">View Latest Analysis →</span>
+            <a id="insight-btn" href="new-analysis.html" class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs shadow-md transition-all">
+              <span id="insight-btn-text" data-i18n="dash_btn_new">Start New Analysis</span> →
             </a>
           </article>
         </div>
@@ -252,8 +241,8 @@
 
       // Populate User Information Dynamically
       const userObj = loadState('medfusion_user') || {};
-      const userName = userObj.name || 'Demo Patient';
-      const userEmail = userObj.email || 'patient@example.com';
+      const userName = userObj.name || 'Patient';
+      const userEmail = userObj.email || 'patient@medfusion.ai';
       const initial = userName.charAt(0).toUpperCase() || 'P';
 
       document.querySelector('#dash-user-name').textContent = userName;
@@ -273,9 +262,65 @@
         if (welcomeTitleEl) welcomeTitleEl.textContent = `${greetingWord}, ${userName}. ${t('dash_overview_suffix')}`;
       }
 
+      function setEmptyDashboardState() {
+        const root = document.querySelector('#recent-analyses-root');
+        const timelineRoot = document.querySelector('#timeline-root');
+        const insightTitle = document.querySelector('#insight-title');
+        const insightBody = document.querySelector('#insight-body');
+        const insightBtn = document.querySelector('#insight-btn');
+        const insightBtnText = document.querySelector('#insight-btn-text');
+
+        document.querySelector('#stat-total').textContent = '0';
+        document.querySelector('#stat-saved').textContent = '0';
+        document.querySelector('#stat-last').textContent = t('stat_no_tests') || 'No tests yet';
+        document.querySelector('#stat-attention').textContent = '0';
+
+        if (root) {
+          root.innerHTML = `
+            <div class="p-8 rounded-2xl bg-slate-900 border border-slate-800 text-center">
+              <div class="h-12 w-12 mx-auto rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center text-xl mb-3 text-teal-400">📊</div>
+              <p class="text-sm font-bold text-white">${t('stat_no_tests')}</p>
+              <p class="text-xs text-slate-400 mt-1 max-w-sm mx-auto">${t('dash_desc')}</p>
+              <a href="new-analysis.html" class="inline-flex items-center gap-2 mt-4 px-5 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs transition-all shadow-lg shadow-teal-500/20">
+                + ${t('dash_btn_new')}
+              </a>
+            </div>
+          `;
+        }
+
+        if (timelineRoot) {
+          timelineRoot.innerHTML = `
+            <div class="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 text-center">
+              <p class="text-xs text-slate-400">${t('dash_timeline_empty') || 'No health milestones recorded yet. Run your first health analysis to start tracking your timeline.'}</p>
+            </div>
+          `;
+        }
+
+        if (insightTitle) {
+          insightTitle.setAttribute('data-i18n', 'dash_ai_title');
+          insightTitle.textContent = t('dash_ai_title');
+        }
+        if (insightBody) {
+          insightBody.setAttribute('data-i18n', 'dash_ai_body');
+          insightBody.textContent = t('dash_ai_body');
+        }
+        if (insightBtn) {
+          insightBtn.href = 'new-analysis.html';
+        }
+        if (insightBtnText) {
+          insightBtnText.setAttribute('data-i18n', 'dash_btn_new');
+          insightBtnText.textContent = t('dash_btn_new');
+        }
+      }
+
       // Fetch Personal Analyses from Database
       async function loadUserAnalyses() {
         const root = document.querySelector('#recent-analyses-root');
+        const timelineRoot = document.querySelector('#timeline-root');
+        const insightTitle = document.querySelector('#insight-title');
+        const insightBody = document.querySelector('#insight-body');
+        const insightBtn = document.querySelector('#insight-btn');
+        const insightBtnText = document.querySelector('#insight-btn-text');
         const lang = getCurrentLang();
         const dateLocale = lang === 'hi' ? 'hi-IN' : lang === 'mr' ? 'mr-IN' : 'en-GB';
 
@@ -284,85 +329,112 @@
             headers: { 'Authorization': 'Bearer ' + token }
           });
 
-          if (!response.ok) throw new Error();
+          if (!response.ok) throw new Error('Failed to load history');
           const items = await response.json();
 
-          // Update Stats Cards
-          document.querySelector('#stat-total').textContent = items.length;
-          document.querySelector('#stat-saved').textContent = items.length;
+          if (Array.isArray(items) && items.length > 0) {
+            // Update Stats Cards
+            document.querySelector('#stat-total').textContent = items.length;
+            document.querySelector('#stat-saved').textContent = items.length;
 
-          if (items.length > 0) {
             const lastItem = items[0];
             const d = new Date(lastItem.created_at || lastItem.completed_at || Date.now());
             document.querySelector('#stat-last').textContent = d.toLocaleDateString(dateLocale, { day: '2-digit', month: 'short', year: 'numeric' });
 
-            const nonNormalCount = items.filter(i => /attention|high|low|review/i.test(i.status || '')).length || 1;
+            const nonNormalCount = items.filter(i => /attention|high|low|review|abnormal/i.test(i.status || '') || /attention|high|low|review|abnormal/i.test(i.overall_status || '')).length;
             document.querySelector('#stat-attention').textContent = nonNormalCount;
 
-            // Populate Recent Analyses Rows
+            // Populate Recent Analyses Rows (up to 5)
             root.innerHTML = items.slice(0, 5).map(item => {
               const dateFormatted = new Date(item.created_at || Date.now()).toLocaleDateString(dateLocale, { day: '2-digit', month: 'short', year: 'numeric' });
               const modsList = Array.isArray(item.modules) ? item.modules : ['chest_xray'];
-              const displayTitle = modsList.map(m => m.replace(/_/g, ' ').toUpperCase()).join(' + ');
+              const displayTitle = item.title || modsList.map(m => m.replace(/_/g, ' ').toUpperCase()).join(' + ');
+              const isAttention = /attention|high|low|review|abnormal/i.test(item.status || '') || /attention|high|low|review|abnormal/i.test(item.overall_status || '');
 
               return `
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition-all gap-3">
                   <div class="flex items-center gap-3">
                     <div class="h-10 w-10 rounded-xl bg-teal-500/10 text-teal-400 font-bold flex items-center justify-center text-base border border-teal-500/20">📋</div>
                     <div>
-                      <h4 class="font-bold text-sm text-white">${displayTitle || item.title}</h4>
+                      <h4 class="font-bold text-sm text-white">${displayTitle}</h4>
                       <p class="text-xs text-slate-400 mt-0.5">${dateFormatted} • ${t('dash_self_analysis')}</p>
                     </div>
                   </div>
                   <div class="flex items-center gap-3">
-                    <span class="px-3 py-1 text-xs font-bold rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">${t('dash_badge_review')}</span>
-                    <button data-modules="${modsList.join(',')}" class="view-item-btn px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-teal-600 text-white font-semibold text-xs transition-colors">
+                    <span class="px-3 py-1 text-xs font-bold rounded-full ${isAttention ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'}">
+                      ${isAttention ? t('dash_badge_review') : t('dash_badge_normal')}
+                    </span>
+                    <a href="results.html?id=${encodeURIComponent(item.id)}" data-modules="${modsList.join(',')}" class="view-item-btn px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-teal-600 text-white font-semibold text-xs transition-colors">
                       ${t('dash_btn_view')}
-                    </button>
+                    </a>
                   </div>
                 </div>
               `;
             }).join('');
 
-            // Attach click handler to View buttons
+            // Attach click handler to store modules for results view
             document.querySelectorAll('.view-item-btn').forEach(btn => {
               btn.addEventListener('click', (e) => {
-                const mods = e.target.dataset.modules ? e.target.dataset.modules.split(',') : ['chest_xray'];
+                const mods = e.currentTarget.dataset.modules ? e.currentTarget.dataset.modules.split(',') : ['chest_xray'];
                 saveState('medfusion_selected_modules', mods);
-                window.location.href = 'results.html';
               });
             });
+
+            // Populate Timeline from real user items
+            if (timelineRoot) {
+              timelineRoot.innerHTML = items.slice(0, 4).map((item, idx) => {
+                const itemDate = new Date(item.created_at || Date.now());
+                const monthYear = itemDate.toLocaleDateString(dateLocale, { month: 'long', year: 'numeric' });
+                const modsList = Array.isArray(item.modules) ? item.modules : ['chest_xray'];
+                const displayTitle = item.title || (modsList.map(m => m.replace(/_/g, ' ').toUpperCase()).join(' + ') + ' Analysis');
+                const isLast = idx === Math.min(items.length, 4) - 1;
+                const statusText = item.overall_status || item.status || 'Completed';
+
+                return `
+                  <div class="flex gap-4">
+                    <div class="flex flex-col items-center">
+                      <div class="h-3.5 w-3.5 rounded-full bg-teal-400 border-2 border-slate-950"></div>
+                      ${!isLast ? '<div class="w-0.5 flex-1 bg-slate-800 mt-1"></div>' : ''}
+                    </div>
+                    <div class="pb-2">
+                      <span class="text-xs font-semibold text-slate-400">${monthYear}</span>
+                      <h4 class="text-sm font-bold text-white mt-0.5">${displayTitle}</h4>
+                      <p class="text-xs text-slate-400 mt-1 leading-relaxed">Evaluation status: ${statusText}. Click View to inspect diagnostic findings.</p>
+                    </div>
+                  </div>
+                `;
+              }).join('');
+            }
+
+            // Update AI Insight Card with latest item
+            const lastMods = Array.isArray(lastItem.modules) ? lastItem.modules : ['chest_xray'];
+            const lastTitle = lastItem.title || lastMods.map(m => m.replace(/_/g, ' ').toUpperCase()).join(' + ');
+            const lastIsAttention = /attention|high|low|review|abnormal/i.test(lastItem.status || '') || /attention|high|low|review|abnormal/i.test(lastItem.overall_status || '');
+            if (insightTitle) {
+              insightTitle.removeAttribute('data-i18n');
+              insightTitle.textContent = `${lastIsAttention ? t('dash_badge_review') : t('dash_badge_normal')}: ${lastTitle}`;
+            }
+            if (insightBody) {
+              insightBody.removeAttribute('data-i18n');
+              insightBody.textContent = lastItem.overall_status 
+                ? `Diagnostic Summary: ${lastItem.overall_status}. Full multimodal clinical parameters evaluated.` 
+                : `AI diagnostic evaluation completed for ${lastTitle}. Review correlated clinical findings and recommendations.`;
+            }
+            if (insightBtn) {
+              insightBtn.href = `results.html?id=${encodeURIComponent(lastItem.id)}`;
+            }
+            if (insightBtnText) {
+              insightBtnText.removeAttribute('data-i18n');
+              insightBtnText.textContent = t('dash_ai_btn') || 'View Latest Analysis';
+            }
+
           } else {
-            root.innerHTML = `
-              <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 text-center">
-                <p class="text-sm font-semibold text-slate-300">${t('stat_no_tests')}</p>
-                <p class="text-xs text-slate-500 mt-1">${t('dash_desc')}</p>
-                <a href="new-analysis.html" class="inline-block mt-4 px-4 py-2 rounded-xl bg-teal-500 text-white text-xs font-bold">${t('dash_btn_new')}</a>
-              </div>
-            `;
+            // User has 0 analyses
+            setEmptyDashboardState();
           }
         } catch (e) {
-          // Fallback UI
-          document.querySelector('#stat-total').textContent = '1';
-          document.querySelector('#stat-last').textContent = new Date().toLocaleDateString(dateLocale, { day: '2-digit', month: 'short', year: 'numeric' });
-          document.querySelector('#stat-saved').textContent = '1';
-          document.querySelector('#stat-attention').textContent = '1';
-
-          root.innerHTML = `
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition-all gap-3">
-              <div class="flex items-center gap-3">
-                <div class="h-10 w-10 rounded-xl bg-teal-500/10 text-teal-400 font-bold flex items-center justify-center text-base border border-teal-500/20">📋</div>
-                <div>
-                  <h4 class="font-bold text-sm text-white">CHEST X-RAY ANALYSIS</h4>
-                  <p class="text-xs text-slate-400 mt-0.5">${new Date().toLocaleDateString(dateLocale, { day: '2-digit', month: 'short', year: 'numeric' })} • ${t('dash_self_analysis')}</p>
-                </div>
-              </div>
-              <div class="flex items-center gap-3">
-                <span class="px-3 py-1 text-xs font-bold rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">${t('dash_badge_review')}</span>
-                <a href="results.html" class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-teal-600 text-white font-semibold text-xs transition-colors">${t('dash_btn_view')}</a>
-              </div>
-            </div>
-          `;
+          // If network / API error, show empty state cleanly, NEVER fake a test!
+          setEmptyDashboardState();
         }
       }
 

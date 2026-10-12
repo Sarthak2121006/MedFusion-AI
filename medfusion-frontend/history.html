@@ -127,29 +127,13 @@
       try {
         const data = await apiRequest('/analysis/history');
         if (!Array.isArray(data) || data.length === 0) {
-          // Provide mock recent history for demo experience if empty
-          root.innerHTML = '';
-          root.appendChild(renderItem({
-            id: 'MF-8921',
-            title: 'Multimodal Radiograph & Blood Screen',
-            status: 'completed',
-            created_at: new Date().toISOString(),
-            modules: ['Chest X-ray', 'CBC (Blood Count)']
-          }));
+          renderEmpty();
           return;
         }
         root.innerHTML = '';
         data.forEach(item => root.appendChild(renderItem(item)));
       } catch (error) {
-        // Fallback to sample history
-        root.innerHTML = '';
-        root.appendChild(renderItem({
-          id: 'MF-8921',
-          title: 'Multimodal Radiograph & Blood Screen',
-          status: 'completed',
-          created_at: new Date().toISOString(),
-          modules: ['Chest X-ray', 'CBC (Blood Count)']
-        }));
+        renderEmpty();
       }
     }
 
