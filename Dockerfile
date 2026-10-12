@@ -35,9 +35,9 @@ WORKDIR /app
 COPY requirements.txt ./
 RUN pip3 install --no-cache-dir --break-system-packages -r requirements.txt
 
-# Install Node.js dependencies
+# Install Node.js dependencies and guarantee native sqlite3 binary compilation
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm ci --only=production && npm rebuild sqlite3 --build-from-source
 
 # Copy application source code
 COPY . .
