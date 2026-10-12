@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>New Analysis | MedFusion AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/png" href="/assets/medfusion_icon.png">
+  <link rel="shortcut icon" href="/assets/medfusion_icon.png">
+  <style>
+    body { font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif; }
+    .card-active {
+      background-color: rgba(4, 47, 46, 0.45) !important;
+      border-color: #14b8a6 !important;
+      box-shadow: 0 0 25px -5px rgba(20, 184, 166, 0.25) !important;
+    }
+  </style>
+</head>
+<body class="bg-[#090d16] text-slate-100 font-sans antialiased min-h-screen">
+  <div class="flex min-h-screen">
+    <!-- Dark Sidebar -->
+    <div data-navbar class="shrink-0"></div>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 min-w-0 bg-[#090d16] p-4 md:p-8 lg:p-10 space-y-8">
+      
+      <!-- Top Header Banner -->
+      <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-950 via-slate-900 to-teal-950 border border-slate-800 rounded-3xl p-6 lg:p-8 shadow-2xl relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative z-10 flex items-center gap-4">
+          <button data-mobile-toggle class="lg:hidden p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white border border-slate-700">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <div>
+            <p class="text-xs uppercase tracking-widest font-bold text-teal-400">ANALYSIS CONFIGURATION</p>
+            <h1 class="text-2xl lg:text-3xl font-extrabold text-white mt-1 tracking-tight">Select Diagnostic Modules</h1>
+            <p class="text-xs sm:text-sm text-slate-400 mt-1.5">Choose medical scans and laboratory test panels to correlate in your multimodal health review.</p>
+          </div>
+        </div>
+        <div class="relative z-10 flex items-center gap-3">
+          <button id="select-all-btn" type="button" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 font-bold text-xs border border-slate-700 transition-colors">
+            Select All
+          </button>
+          <button id="continue-button" class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-950 font-extrabold text-sm shadow-lg shadow-teal-500/25 transition-all transform hover:-translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none" disabled>
+            <span>Continue to Upload</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Selection Modules Grid -->
+      <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Image Analysis (3 Columns) -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+            <div class="flex items-center gap-2">
+              <span class="text-teal-400 text-base">🔬</span>
+              <h2 class="text-sm font-bold uppercase tracking-wider text-slate-200">Image Analysis Modules</h2>
+            </div>
+            <span class="text-xs text-slate-500 font-semibold">3 Modules</span>
+          </div>
+          <div id="image-modules" class="grid gap-3"></div>
+        </div>
+
+        <!-- Laboratory OCR Panels (7 Columns) -->
+        <div class="lg:col-span-7 space-y-4">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+            <div class="flex items-center gap-2">
+              <span class="text-teal-400 text-base">🩸</span>
+              <h2 class="text-sm font-bold uppercase tracking-wider text-slate-200">Laboratory Blood & Metabolic Panels</h2>
+            </div>
+            <span class="text-xs text-slate-500 font-semibold">5 Panels</span>
+          </div>
+          <div id="lab-modules" class="grid sm:grid-cols-2 gap-3"></div>
+        </div>
+
+      </section>
+
+      <!-- Educational Guidance Footer Note -->
+      <div class="rounded-2xl border border-slate-800 bg-[#0c1322]/60 p-4 flex items-start gap-3 text-xs text-slate-400">
+        <span class="text-teal-400 text-base">💡</span>
+        <p class="leading-relaxed">
+          <strong class="text-slate-200">Multi-Module Advantage:</strong> MedFusion AI achieves higher diagnostic correlation when both imaging scans and laboratory panels are selected simultaneously. The Multimodal Fusion Engine cross-references all data points into a single educational timeline.
+        </p>
+      </div>
+
+    </main>
+  </div>
+
+  <script type="module">
+    import { requireAuth } from './js/auth.js';
+    import { saveState, loadState, showToast } from './js/utils.js';
+    import './js/api.js';
+
+    requireAuth();
+
+    const moduleDefinitions = [
+      { id: 'chest_xray', title: 'Chest X-ray', icon: '🫁', description: 'Deep CNN radiograph analysis (pneumonia, consolidation, effusion).', type: 'image' },
+      { id: 'bone_xray', title: 'Bone Fracture X-ray', icon: '🦴', description: 'Cortical continuity and fracture line pattern screening.', type: 'image' },
+      { id: 'skin_image', title: 'Skin / Lesion Image', icon: '🔍', description: 'Multiclass dermatological lesion classification.', type: 'image' },
+      { id: 'cbc', title: 'Complete Blood Count (CBC)', icon: '🩸', description: 'OCR extraction of Hb, WBC, RBC, and Platelet counts.', type: 'lab' },
+      { id: 'diabetes', title: 'Diabetes & Glucose Panel', icon: '🍬', description: 'FBS, PPBS, and HbA1c glycemic reference evaluations.', type: 'lab' },
+      { id: 'lipid_profile', title: 'Lipid Cardiovascular Profile', icon: '❤️', description: 'Total Cholesterol, HDL, LDL, and Triglyceride mapping.', type: 'lab' },
+      { id: 'kft', title: 'Kidney Function Test (KFT)', icon: '🫘', description: 'Serum Creatinine, Blood Urea Nitrogen, and eGFR monitoring.', type: 'lab' },
+      { id: 'lft', title: 'Liver Function Test (LFT)', icon: '🩺', description: 'SGOT, SGPT, Bilirubin, and Alkaline Phosphatase assessment.', type: 'lab' }
+    ];
+
+    const selected = new Set(loadState('medfusion_selected_modules') || []);
+    const continueButton = document.querySelector('#continue-button');
+    const selectAllBtn = document.querySelector('#select-all-btn');
+    const imageRoot = document.querySelector('#image-modules');
+    const labRoot = document.querySelector('#lab-modules');
+
+    function renderModuleCard(module) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'w-full rounded-2xl border border-slate-800 bg-[#0c1322] p-4 text-left transition-all hover:border-slate-700 hover:-translate-y-0.5 relative group cursor-pointer';
+      button.dataset.module = module.id;
+
+      const isSelected = selected.has(module.id);
+      if (isSelected) button.classList.add('card-active');
+
+      button.innerHTML = `
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-lg group-hover:scale-105 transition-transform">
+              ${module.icon}
+            </div>
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-teal-400 bg-teal-500/10 px-2 py-0.5 rounded border border-teal-500/20">
+                ${module.type === 'image' ? 'Image Analysis' : 'Laboratory OCR'}
+              </span>
+              <h3 class="text-sm font-bold text-white mt-1">${module.title}</h3>
+            </div>
+          </div>
+          <div class="check-box w-5 h-5 rounded-lg border border-slate-700 bg-slate-900 flex items-center justify-center transition-all ${isSelected ? 'border-teal-400 bg-teal-500 text-slate-950 font-bold' : ''}">
+            ${isSelected ? '✓' : ''}
+          </div>
+        </div>
+        <p class="text-xs text-slate-400 mt-2.5 leading-relaxed pl-1">${module.description}</p>
+      `;
+
+      button.addEventListener('click', () => {
+        if (selected.has(module.id)) {
+          selected.delete(module.id);
+          button.classList.remove('card-active');
+          const cb = button.querySelector('.check-box');
+          cb.className = 'check-box w-5 h-5 rounded-lg border border-slate-700 bg-slate-900 flex items-center justify-center transition-all';
+          cb.textContent = '';
+        } else {
+          selected.add(module.id);
+          button.classList.add('card-active');
+          const cb = button.querySelector('.check-box');
+          cb.className = 'check-box w-5 h-5 rounded-lg border border-teal-400 bg-teal-500 text-slate-950 font-bold flex items-center justify-center transition-all';
+          cb.textContent = '✓';
+        }
+        saveSelection();
+      });
+
+      return button;
+    }
+
+    function saveSelection() {
+      saveState('medfusion_selected_modules', Array.from(selected));
+      continueButton.disabled = selected.size === 0;
+      selectAllBtn.textContent = selected.size === moduleDefinitions.length ? 'Deselect All' : 'Select All';
+    }
+
+    function init() {
+      moduleDefinitions.forEach(module => {
+        const root = module.type === 'image' ? imageRoot : labRoot;
+        root.append(renderModuleCard(module));
+      });
+
+      continueButton.disabled = selected.size === 0;
+
+      continueButton.addEventListener('click', () => {
+        if (selected.size === 0) return showToast('Please select at least one module.');
+        window.location.href = 'upload.html';
+      });
+
+      selectAllBtn.addEventListener('click', () => {
+        if (selected.size === moduleDefinitions.length) {
+          selected.clear();
+          document.querySelectorAll('[data-module]').forEach(b => {
+            b.classList.remove('card-active');
+            const cb = b.querySelector('.check-box');
+            cb.className = 'check-box w-5 h-5 rounded-lg border border-slate-700 bg-slate-900 flex items-center justify-center transition-all';
+            cb.textContent = '';
+          });
+        } else {
+          moduleDefinitions.forEach(m => selected.add(m.id));
+          document.querySelectorAll('[data-module]').forEach(b => {
+            b.classList.add('card-active');
+            const cb = b.querySelector('.check-box');
+            cb.className = 'check-box w-5 h-5 rounded-lg border border-teal-400 bg-teal-500 text-slate-950 font-bold flex items-center justify-center transition-all';
+            cb.textContent = '✓';
+          });
+        }
+        saveSelection();
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>

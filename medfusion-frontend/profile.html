@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Profile Settings | MedFusion AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/png" href="/assets/medfusion_icon.png">
+  <link rel="shortcut icon" href="/assets/medfusion_icon.png">
+  <style>
+    body { font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif; }
+  </style>
+</head>
+<body class="bg-[#090d16] text-slate-100 font-sans antialiased min-h-screen">
+  <div class="flex min-h-screen">
+    <!-- Dark Sidebar -->
+    <div data-navbar class="shrink-0"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 min-w-0 bg-[#090d16] p-4 md:p-8 lg:p-10 space-y-8">
+      
+      <!-- Top Header Banner -->
+      <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-950 via-slate-900 to-teal-950 border border-slate-800 rounded-3xl p-6 lg:p-8 shadow-2xl relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative z-10 flex items-center gap-4">
+          <button data-mobile-toggle class="lg:hidden p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white border border-slate-700">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <div>
+            <p data-i18n="prof_eyebrow" class="text-xs uppercase tracking-widest font-bold text-teal-400">PATIENT ACCOUNT</p>
+            <h1 data-i18n="prof_title" class="text-2xl lg:text-3xl font-extrabold text-white mt-1 tracking-tight">Personal Profile & Credentials</h1>
+            <p data-i18n="prof_desc" class="text-xs sm:text-sm text-slate-400 mt-1.5">Manage your personal identification details, contact email, and clinical session notes.</p>
+          </div>
+        </div>
+      </header>
+
+      <!-- Profile Form Section -->
+      <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Form Fields (8 Columns) -->
+        <div class="lg:col-span-8 rounded-3xl border border-slate-800 bg-[#0c1322] p-6 sm:p-8 shadow-xl space-y-6">
+          <div class="flex items-center gap-4 pb-4 border-b border-slate-800">
+            <div id="profile-avatar-big" class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-teal-500 to-emerald-400 text-slate-950 font-extrabold text-2xl flex items-center justify-center shadow-lg shadow-teal-500/20">
+              P
+            </div>
+            <div>
+              <h2 id="profile-display-name" class="text-lg font-extrabold text-white">Patient Profile</h2>
+              <p id="profile-display-email" class="text-xs text-slate-400">patient@example.com</p>
+            </div>
+          </div>
+
+          <form id="profile-form" class="space-y-4">
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label for="profile-name" data-i18n="prof_full_name" class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Full Name</label>
+                <input id="profile-name" name="name" type="text" class="w-full rounded-xl border border-slate-700 bg-slate-900/90 px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-teal-400 focus:outline-none focus:ring-1 focus:ring-teal-400" placeholder="e.g. Sarthak Gaikwad">
+              </div>
+
+              <div>
+                <label for="profile-email" data-i18n="prof_email" class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Email Address</label>
+                <input id="profile-email" name="email" type="email" class="w-full rounded-xl border border-slate-800 bg-slate-900/40 px-4 py-2.5 text-sm text-slate-400 cursor-not-allowed" disabled>
+              </div>
+            </div>
+
+            <div>
+              <label for="profile-notes" data-i18n="prof_notes" class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Personal Health Notes / Pre-existing Conditions</label>
+              <textarea id="profile-notes" class="w-full rounded-xl border border-slate-700 bg-slate-900/90 px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-teal-400 focus:outline-none focus:ring-1 focus:ring-teal-400 min-h-[7rem]" placeholder="Optional notes for personal tracking (e.g. seasonal allergies, blood pressure history)..."></textarea>
+            </div>
+
+            <div class="flex items-center gap-3 pt-3">
+              <button id="save-profile" data-i18n="prof_save" type="button" class="px-6 py-3 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-950 font-extrabold text-xs shadow-lg shadow-teal-500/20 transition-all cursor-pointer">
+                Save Profile Changes
+              </button>
+              <button id="cancel-profile" data-i18n="prof_discard" type="button" class="px-5 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 font-bold text-xs border border-slate-700 transition-colors cursor-pointer">
+                Discard Changes
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Security & Session Card (4 Columns) -->
+        <aside class="lg:col-span-4 rounded-3xl border border-slate-800 bg-[#0c1322] p-6 shadow-xl space-y-5">
+          <p class="text-xs uppercase font-bold tracking-wider text-teal-400">DATA PRIVACY & CREDENTIALS</p>
+          
+          <div class="rounded-2xl border border-slate-800 bg-slate-900/80 p-4 space-y-1.5 text-xs text-slate-300">
+            <span class="font-bold text-white flex items-center gap-1.5">
+              <span>🛡️</span> Session Authentication
+            </span>
+            <p class="text-slate-400 text-[11px] leading-relaxed">
+              Your login session is validated with a cryptographic JWT token saved locally in your browser storage.
+            </p>
+          </div>
+
+          <div class="rounded-2xl border border-slate-800 bg-slate-900/80 p-4 space-y-1.5 text-xs text-slate-300">
+            <span class="font-bold text-white flex items-center gap-1.5">
+              <span>🗄️</span> SQLite Local Isolation
+            </span>
+            <p class="text-slate-400 text-[11px] leading-relaxed">
+              Health report records are maintained in your private SQLite database (`medfusion.db`).
+            </p>
+          </div>
+
+          <div class="pt-2">
+            <button id="logout-profile-btn" data-i18n="nav_logout" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-bold text-xs border border-rose-500/20 transition-all cursor-pointer">
+              Sign Out of Account
+            </button>
+          </div>
+        </aside>
+
+      </section>
+
+    </main>
+  </div>
+
+  <script type="module">
+    import { requireAuth, logout } from './js/auth.js';
+    import { getUser, showToast, saveState, loadState } from './js/utils.js';
+    import { applyTranslations } from './js/i18n.js';
+    import './js/api.js';
+
+    requireAuth();
+    applyTranslations();
+
+    window.addEventListener('medfusion_lang_changed', () => {
+      applyTranslations();
+    });
+
+    const user = getUser() || {};
+    const nameField = document.querySelector('#profile-name');
+    const emailField = document.querySelector('#profile-email');
+    const notesField = document.querySelector('#profile-notes');
+    const saveButton = document.querySelector('#save-profile');
+    const cancelButton = document.querySelector('#cancel-profile');
+    const displayName = document.querySelector('#profile-display-name');
+    const displayEmail = document.querySelector('#profile-display-email');
+    const bigAvatar = document.querySelector('#profile-avatar-big');
+
+    const nameVal = user.name || (user.email ? user.email.split('@')[0] : 'Demo Patient');
+    nameField.value = nameVal;
+    emailField.value = user.email || 'patient@example.com';
+    notesField.value = loadState('medfusion_profile_notes') || '';
+
+    if (displayName) displayName.textContent = nameVal;
+    if (displayEmail) displayEmail.textContent = user.email || 'patient@example.com';
+    if (bigAvatar) bigAvatar.textContent = nameVal.charAt(0).toUpperCase();
+
+    saveButton?.addEventListener('click', () => {
+      const newName = nameField.value.trim();
+      if (newName) {
+        user.name = newName;
+        localStorage.setItem('medfusion_user', JSON.stringify(user));
+        if (displayName) displayName.textContent = newName;
+        if (bigAvatar) bigAvatar.textContent = newName.charAt(0).toUpperCase();
+      }
+      saveState('medfusion_profile_notes', notesField.value.trim());
+      showToast('Profile information successfully saved.', 'info');
+    });
+
+    cancelButton?.addEventListener('click', () => {
+      nameField.value = user.name || '';
+      emailField.value = user.email || '';
+      notesField.value = loadState('medfusion_profile_notes') || '';
+      showToast('Changes discarded.');
+    });
+
+    document.querySelector('#logout-profile-btn')?.addEventListener('click', logout);
+  </script>
+</body>
+</html>

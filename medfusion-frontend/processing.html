@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Processing Analysis | MedFusion AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/png" href="/assets/medfusion_icon.png">
+  <link rel="shortcut icon" href="/assets/medfusion_icon.png">
+  <style>
+    body { font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif; }
+    .step-active {
+      border-color: #14b8a6 !important;
+      background-color: rgba(4, 47, 46, 0.35) !important;
+      box-shadow: 0 0 25px -5px rgba(20, 184, 166, 0.2) !important;
+    }
+  </style>
+</head>
+<body class="bg-[#090d16] text-slate-100 font-sans antialiased min-h-screen">
+  <div class="flex min-h-screen">
+    <!-- Dark Sidebar -->
+    <div data-navbar class="shrink-0"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 min-w-0 bg-[#090d16] p-4 md:p-8 lg:p-10 space-y-8">
+      
+      <!-- Top Header Banner -->
+      <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-950 via-slate-900 to-teal-950 border border-slate-800 rounded-3xl p-6 lg:p-8 shadow-2xl relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative z-10 flex items-center gap-4">
+          <button data-mobile-toggle class="lg:hidden p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white border border-slate-700">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <div class="hidden sm:flex h-14 w-14 rounded-2xl bg-slate-900/90 border border-teal-500/30 p-1.5 items-center justify-center shadow-lg shadow-teal-500/10 shrink-0">
+            <img src="/assets/medfusion_icon.png" alt="MedFusion AI" class="w-full h-full object-contain">
+          </div>
+          <div>
+            <p class="text-xs uppercase tracking-widest font-bold text-teal-400">MULTIMODAL PIPELINE</p>
+            <h1 class="text-2xl lg:text-3xl font-extrabold text-white mt-1 tracking-tight">Synthesizing Multimodal Records</h1>
+            <p class="text-xs sm:text-sm text-slate-400 mt-1.5">Processing medical imaging neural networks, OCR document extractors, and the Multimodal Fusion Engine.</p>
+          </div>
+        </div>
+        <div class="relative z-10 flex-shrink-0">
+          <a href="results.html" class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs border border-slate-700 transition-colors">
+            <span>Skip to Results &rarr;</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- Overall Progress Bar Container -->
+      <div class="rounded-3xl border border-slate-800 bg-[#0c1322] p-6 shadow-xl space-y-3">
+        <div class="flex items-center justify-between text-xs font-bold">
+          <span class="text-slate-300 uppercase tracking-wider flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-teal-400 animate-ping"></span>
+            Pipeline Execution
+          </span>
+          <span id="progress-pct" class="text-teal-400 font-mono">15% Complete</span>
+        </div>
+        <div class="h-3 w-full bg-slate-900 rounded-full overflow-hidden p-0.5 border border-slate-800">
+          <div id="progress-bar-fill" class="h-full bg-gradient-to-r from-teal-500 to-emerald-400 rounded-full transition-all duration-500 w-[15%]"></div>
+        </div>
+      </div>
+
+      <!-- Execution Stages (6 Bento Cards) -->
+      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" id="process-steps-container">
+        
+        <article class="process-step step-active rounded-3xl border border-slate-800 bg-[#0c1322] p-6 transition-all space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="step-num w-9 h-9 rounded-xl bg-teal-500 text-slate-950 font-extrabold text-sm flex items-center justify-center">1</span>
+            <span class="text-[10px] font-bold text-teal-400 bg-teal-500/10 px-2 py-0.5 rounded border border-teal-500/20">Secure Ingestion</span>
+          </div>
+          <h2 class="text-base font-bold text-white">Document Ingestion</h2>
+          <p class="text-xs text-slate-400 leading-relaxed">Medical images and laboratory PDF files validated and staged in isolated session memory.</p>
+        </article>
+
+        <article class="process-step rounded-3xl border border-slate-800 bg-[#0c1322] p-6 transition-all space-y-3 opacity-60">
+          <div class="flex items-center justify-between">
+            <span class="step-num w-9 h-9 rounded-xl bg-slate-800 text-slate-300 font-extrabold text-sm flex items-center justify-center">2</span>
+            <span class="text-[10px] font-bold text-slate-500 bg-slate-800 px-2 py-0.5 rounded">Pre-processing</span>
+          </div>
+          <h2 class="text-base font-bold text-white">Image Standardization</h2>
+          <p class="text-xs text-slate-400 leading-relaxed">Grayscale normalization, CLAHE contrast adjustment, and affine calibration applied.</p>
+        </article>
+
+        <article class="process-step rounded-3xl border border-slate-800 bg-[#0c1322] p-6 transition-all space-y-3 opacity-60">
+          <div class="flex items-center justify-between">
+            <span class="step-num w-9 h-9 rounded-xl bg-slate-800 text-slate-300 font-extrabold text-sm flex items-center justify-center">3</span>
+            <span class="text-[10px] font-bold text-slate-500 bg-slate-800 px-2 py-0.5 rounded">Deep Learning</span>
+          </div>
+          <h2 class="text-base font-bold text-white">AI / CNN & OCR Extraction</h2>
+          <p class="text-xs text-slate-400 leading-relaxed">Deep models infer radiograph features; OCR parses laboratory blood test biomarkers.</p>
+        </article>
+
+        <article class="process-step rounded-3xl border border-slate-800 bg-[#0c1322] p-6 transition-all space-y-3 opacity-60">
+          <div class="flex items-center justify-between">
+            <span class="step-num w-9 h-9 rounded-xl bg-slate-800 text-slate-300 font-extrabold text-sm flex items-center justify-center">4</span>
+            <span class="text-[10px] font-bold text-slate-500 bg-slate-800 px-2 py-0.5 rounded">Reference Ranges</span>
+          </div>
+          <h2 class="text-base font-bold text-white">Clinical Calibration</h2>
+          <p class="text-xs text-slate-400 leading-relaxed">Extracted parameters compared against standard clinical reference boundaries.</p>
+        </article>
+
+        <article class="process-step rounded-3xl border border-slate-800 bg-[#0c1322] p-6 transition-all space-y-3 opacity-60">
+          <div class="flex items-center justify-between">
+            <span class="step-num w-9 h-9 rounded-xl bg-slate-800 text-slate-300 font-extrabold text-sm flex items-center justify-center">5</span>
+            <span class="text-[10px] font-bold text-slate-500 bg-slate-800 px-2 py-0.5 rounded">Fusion Core</span>
+          </div>
+          <h2 class="text-base font-bold text-white">Multimodal Fusion Engine</h2>
+          <p class="text-xs text-slate-400 leading-relaxed">Cross-modal correlation checks identify relationships between lab levels and scan markers.</p>
+        </article>
+
+        <article class="process-step rounded-3xl border border-slate-800 bg-[#0c1322] p-6 transition-all space-y-3 opacity-60">
+          <div class="flex items-center justify-between">
+            <span class="step-num w-9 h-9 rounded-xl bg-slate-800 text-slate-300 font-extrabold text-sm flex items-center justify-center">6</span>
+            <span class="text-[10px] font-bold text-slate-500 bg-slate-800 px-2 py-0.5 rounded">Synthesis</span>
+          </div>
+          <h2 class="text-base font-bold text-white">Health Summary Assembly</h2>
+          <p class="text-xs text-slate-400 leading-relaxed">Aggregated diagnostic observations structured into interactive cards and PDF generation.</p>
+        </article>
+
+      </section>
+
+      <!-- Bottom Status Note -->
+      <div class="rounded-2xl border border-slate-800 bg-[#0c1322]/60 p-4 flex items-center justify-between text-xs text-slate-400">
+        <span class="flex items-center gap-2">
+          <span class="text-teal-400">ℹ️</span>
+          Analysis pipeline typically finishes within 4 to 8 seconds depending on module count.
+        </span>
+        <button id="instant-finish-btn" class="font-bold text-teal-400 hover:text-teal-300 underline cursor-pointer">
+          Complete now &rarr;
+        </button>
+      </div>
+
+    </main>
+  </div>
+
+  <script type="module">
+    import { requireAuth } from './js/auth.js';
+    import './js/api.js';
+
+    requireAuth();
+
+    const steps = Array.from(document.querySelectorAll('.process-step'));
+    const bar = document.querySelector('#progress-bar-fill');
+    const pctLabel = document.querySelector('#progress-pct');
+    let activeIndex = 0;
+
+    function advance() {
+      steps.forEach((step, index) => {
+        const num = step.querySelector('.step-num');
+        if (index <= activeIndex) {
+          step.classList.add('step-active');
+          step.classList.remove('opacity-60');
+          if (num) {
+            num.className = 'step-num w-9 h-9 rounded-xl bg-teal-500 text-slate-950 font-extrabold text-sm flex items-center justify-center';
+          }
+        } else {
+          step.classList.remove('step-active');
+          step.classList.add('opacity-60');
+          if (num) {
+            num.className = 'step-num w-9 h-9 rounded-xl bg-slate-800 text-slate-300 font-extrabold text-sm flex items-center justify-center';
+          }
+        }
+      });
+
+      const pct = Math.min(100, Math.round(((activeIndex + 1) / steps.length) * 100));
+      bar.style.width = `${pct}%`;
+      pctLabel.textContent = `${pct}% Complete`;
+
+      activeIndex += 1;
+    }
+
+    advance();
+
+    const analysisId = new URLSearchParams(window.location.search).get('id') || localStorage.getItem('medfusion_active_analysis_id');
+    const targetUrl = analysisId ? `results.html?id=${encodeURIComponent(analysisId)}` : 'results.html';
+
+    const interval = setInterval(() => {
+      if (activeIndex >= steps.length) {
+        clearInterval(interval);
+        setTimeout(() => {
+          window.location.href = targetUrl;
+        }, 800);
+        return;
+      }
+      advance();
+    }, 1000);
+
+    document.querySelector('#instant-finish-btn')?.addEventListener('click', () => {
+      clearInterval(interval);
+      window.location.href = targetUrl;
+    });
+  </script>
+</body>
+</html>

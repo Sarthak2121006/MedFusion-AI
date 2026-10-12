@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Analysis Results | MedFusion AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/png" href="/assets/medfusion_icon.png">
+  <link rel="shortcut icon" href="/assets/medfusion_icon.png">
+  <style>
+    body { font-family: 'Manrope', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif; }
+  </style>
+</head>
+<body class="bg-[#090d16] text-slate-100 font-sans antialiased min-h-screen">
+  <div class="flex min-h-screen">
+    <!-- Dark Sidebar -->
+    <div data-navbar class="shrink-0"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 min-w-0 bg-[#090d16] p-4 md:p-8 lg:p-10 space-y-8">
+      
+      <!-- Top Header Banner -->
+      <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-950 via-slate-900 to-teal-950 border border-slate-800 rounded-3xl p-6 lg:p-8 shadow-2xl relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative z-10 flex items-center gap-4">
+          <button data-mobile-toggle class="lg:hidden p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white border border-slate-700">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <div class="hidden sm:flex h-14 w-14 rounded-2xl bg-slate-900/90 border border-teal-500/30 p-1.5 items-center justify-center shadow-lg shadow-teal-500/10 shrink-0">
+            <img src="/assets/medfusion_icon.png" alt="MedFusion AI" class="w-full h-full object-contain">
+          </div>
+          <div>
+            <p id="top-eyebrow" class="text-xs uppercase tracking-widest font-bold text-teal-400">MULTIMODAL HEALTH INTELLIGENCE</p>
+            <h1 id="top-title" class="text-2xl lg:text-3xl font-extrabold text-white mt-1 tracking-tight">Analysis Results & Health Summary</h1>
+            <p id="top-subtitle" class="text-xs sm:text-sm text-slate-400 mt-1.5">Correlated AI findings synthesized across imaging scans and laboratory blood test panels.</p>
+          </div>
+        </div>
+        <div class="relative z-10 flex flex-wrap items-center gap-3">
+          
+          <!-- Topbar Language Selector -->
+          <div class="flex items-center gap-1.5 bg-slate-900 border border-slate-700/80 rounded-2xl px-3 py-2 shadow-sm">
+            <span class="text-teal-400 text-sm">🌐</span>
+            <select data-lang-selector onchange="if(window.setLanguage) window.setLanguage(this.value);" class="bg-transparent text-teal-300 text-xs font-extrabold border-none outline-none cursor-pointer pr-1">
+              <option value="en" class="bg-slate-950 text-white">English</option>
+              <option value="hi" class="bg-slate-950 text-white">हिन्दी (Hindi)</option>
+              <option value="mr" class="bg-slate-950 text-white">मराठी (Marathi)</option>
+            </select>
+          </div>
+
+          <button id="view-detailed-btn" class="px-4 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-slate-200 font-bold text-xs border border-slate-700 transition-colors">
+            Toggle Detailed Text Report
+          </button>
+          
+          <a id="download-report" href="/api/reports/pdf" download="MedFusion_Health_Report.pdf" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-950 font-extrabold text-xs shadow-lg shadow-teal-500/25 transition-all transform hover:-translate-y-0.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            Download PDF Report
+          </a>
+        </div>
+      </header>
+      
+      <!-- Summary Cards Dynamic Root -->
+      <section id="results-root" class="space-y-6"></section>
+      
+      <!-- Detailed Text Report Container -->
+      <div id="detailed-report-container" class="space-y-6"></div>
+
+      <!-- Educational Guidance Notice -->
+      <div id="disclaimer-banner" class="rounded-2xl border border-slate-800 bg-[#0c1322]/60 p-4 flex items-start gap-3 text-xs text-slate-400">
+        <span class="text-teal-400 text-base">⚖️</span>
+        <p class="leading-relaxed" id="disclaimer-text">
+          <strong class="text-slate-200">Clinical Disclaimer:</strong> MedFusion AI is an AI-assisted informational intelligence tool designed to organize patient health summaries. It does not replace independent clinical evaluation or licensed medical treatment decisions.
+        </p>
+      </div>
+
+    </main>
+  </div>
+  
+  <script type="module">
+    import { requireAuth } from './js/auth.js';
+    import { getCurrentLang, setLanguage, t, applyTranslations } from './js/i18n.js';
+    import { MULTILINGUAL_REPORTS } from './js/reportData.js';
+    import './js/api.js';
+
+    requireAuth();
+
+    function getToken() {
+      return localStorage.getItem('medfusion_token');
+    }
+
+    function loadState(key) {
+      try {
+        const item = localStorage.getItem(key);
+        return item ? JSON.parse(item) : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    const resultsRoot = document.querySelector('#results-root');
+    const reportContainer = document.querySelector('#detailed-report-container');
+    const detailedBtn = document.querySelector('#view-detailed-btn');
+    const downloadReportBtn = document.querySelector('#download-report');
+
+    function updateDownloadLink(activeId = null) {
+      const token = getToken() || '';
+      const lang = getCurrentLang();
+      const selectedModules = loadState('medfusion_selected_modules') || ['chest_xray', 'cbc'];
+      const id = activeId || new URLSearchParams(window.location.search).get('id') || localStorage.getItem('medfusion_active_analysis_id');
+      if (downloadReportBtn) {
+        if (id) {
+          downloadReportBtn.href = `/api/reports/${encodeURIComponent(id)}/pdf?token=${encodeURIComponent(token)}&lang=${encodeURIComponent(lang)}`;
+        } else {
+          downloadReportBtn.href = `/api/reports/pdf?token=${encodeURIComponent(token)}&modules=${encodeURIComponent(selectedModules.join(','))}&lang=${encodeURIComponent(lang)}`;
+        }
+      }
+    }
+
+    function renderLiveAnalysisCard(data, lang) {
+      const a = data.analysis || {};
+      const isReviewRequired = a.overall_status === 'Review Required' || !a.is_normal;
+      const statusClass = isReviewRequired 
+        ? 'bg-rose-500/10 text-rose-300 border-rose-500/30' 
+        : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30';
+      const statusText = a.overall_status || (isReviewRequired ? 'Review Required' : 'No Significant Finding Detected by Model');
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'space-y-6';
+
+      const storedName = data.stored_filename || (a.file_path ? a.file_path.split(/[\\/]/).pop() : null) || a.filename;
+      const thumbUrl = data.thumbnail_url || (storedName ? `/uploads/${storedName}` : null);
+
+      wrapper.innerHTML = `
+        <!-- Executive Overview Card -->
+        <article class="rounded-3xl border border-slate-800 bg-[#0c1322] p-6 lg:p-8 shadow-2xl space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-4 border-b border-slate-800/80">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-teal-400 bg-teal-500/10 px-2.5 py-1 rounded-full border border-teal-500/20">
+                  ${a.modality ? a.modality.replace('_', ' ').toUpperCase() : 'MEDICAL AI'}
+                </span>
+                <span class="text-xs text-slate-400 font-mono">Ref: ${data.id}</span>
+              </div>
+              <h2 class="text-2xl font-extrabold text-white mt-2">${a.examination_type || a.title || 'Clinical Examination'}</h2>
+              <p class="text-xs text-slate-400 mt-1">Source file: <span class="text-slate-200 font-semibold">${data.filename || a.filename || 'Uploaded Medical Input'}</span></p>
+            </div>
+            <span class="inline-flex items-center px-4 py-2 rounded-full text-xs font-bold border ${statusClass}">
+              ${isReviewRequired ? '⚠️ ' : '✓ '}${statusText}
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Left: Verified Image Preview -->
+            <div class="lg:col-span-5 rounded-2xl border border-slate-800 bg-slate-950 p-4 flex flex-col items-center justify-center">
+              <p class="text-[10px] font-bold uppercase tracking-wider text-teal-400 mb-3 self-start">Verified Ingested Source Capture</p>
+              ${thumbUrl ? `
+                <img src="${thumbUrl}" alt="Source medical file" class="max-h-72 w-full object-contain rounded-xl border border-slate-800 bg-black/60 shadow-inner" onerror="if('${storedName}' && this.src.indexOf('${storedName}')===-1) { this.src = '/uploads/${storedName}'; } else if('${a.filename}' && this.src.indexOf('${a.filename}')===-1) { this.src = '/uploads/${a.filename}'; }">
+                <p class="text-[10px] text-slate-400 mt-2 font-mono truncate w-full text-center">${data.filename || a.filename || 'Source Medical Image'}</p>
+              ` : `
+                <div class="h-48 w-full rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-500 text-xs">
+                  Document archive record
+                </div>
+              `}
+            </div>
+
+            <!-- Right: Clinical Summary & Impression -->
+            <div class="lg:col-span-7 space-y-4 flex flex-col justify-between">
+              <div class="rounded-2xl border border-slate-800 bg-slate-900/80 p-5 space-y-3">
+                <p class="text-xs font-bold uppercase tracking-wider text-teal-400">Executive Summary Findings</p>
+                <ul class="space-y-2 text-xs text-slate-200">
+                  ${(a.summary_bullets || []).map(b => `<li class="flex items-start gap-2"><span class="text-teal-400 text-sm leading-none">•</span><span>${b}</span></li>`).join('')}
+                </ul>
+              </div>
+
+              <div class="rounded-2xl border ${isReviewRequired ? 'border-amber-500/30 bg-amber-500/10' : 'border-slate-800 bg-slate-900/60'} p-5 space-y-2">
+                <p class="text-xs font-bold uppercase tracking-wider ${isReviewRequired ? 'text-amber-400' : 'text-teal-400'}">Preliminary AI Impression</p>
+                <p class="text-xs text-slate-200 leading-relaxed font-medium">
+                  ${a.preliminary_impression || 'No primary abnormalities identified.'}
+                </p>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Structured Examination Findings Table -->
+        <article class="rounded-3xl border border-slate-800 bg-[#0c1322] p-6 lg:p-8 shadow-2xl space-y-4">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+            <div>
+              <p class="text-[10px] font-bold uppercase tracking-wider text-teal-400">DETAILED PARAMETERS</p>
+              <h3 class="text-lg font-extrabold text-white mt-0.5">Structured Examination Findings Table</h3>
+            </div>
+            <span class="text-xs text-slate-400 font-medium">${(a.table_rows || []).length} parameters evaluated</span>
+          </div>
+
+          <div class="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-950">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="border-b border-slate-800 bg-slate-900/90 text-slate-400 uppercase tracking-wider font-semibold text-[11px]">
+                  <th class="py-3 px-4">Parameter / Anatomical Region</th>
+                  <th class="py-3 px-4">Observed Result / Measurement</th>
+                  <th class="py-3 px-4">Reference Criteria</th>
+                  <th class="py-3 px-4 text-center">Status</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/60">
+                ${(a.table_rows || []).map(row => {
+                  const isRowReview = row.status === 'Review Required' || row.status === 'High' || row.status === 'Low';
+                  const badgeColor = isRowReview 
+                    ? 'bg-rose-500/10 text-rose-300 border-rose-500/30' 
+                    : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30';
+                  return `
+                    <tr class="hover:bg-slate-900/50 transition-colors">
+                      <td class="py-3 px-4 font-bold text-slate-100">${row.param}</td>
+                      <td class="py-3 px-4 text-slate-300 font-medium">${row.result}</td>
+                      <td class="py-3 px-4 text-slate-400">${row.range || 'Standard baseline limits'}</td>
+                      <td class="py-3 px-4 text-center">
+                        <span class="inline-block px-2.5 py-1 text-[10px] font-extrabold rounded-full border ${badgeColor}">
+                          ${row.status}
+                        </span>
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+        <!-- Technical Quality & Measurements Bento Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Quality Metrics -->
+          <article class="rounded-3xl border border-slate-800 bg-[#0c1322] p-6 shadow-xl space-y-3">
+            <p class="text-xs uppercase font-bold tracking-wider text-teal-400">Technical Image Quality</p>
+            <div class="grid grid-cols-2 gap-3 pt-1 text-xs">
+              <div class="rounded-xl border border-slate-800 bg-slate-900 p-3">
+                <span class="text-slate-400 block text-[10px] uppercase font-bold">Dimensions</span>
+                <strong class="text-white">${a.quality_metrics?.width || 0} × ${a.quality_metrics?.height || 0} px</strong>
+              </div>
+              <div class="rounded-xl border border-slate-800 bg-slate-900 p-3">
+                <span class="text-slate-400 block text-[10px] uppercase font-bold">Sharpness Variance</span>
+                <strong class="text-teal-400">${a.quality_metrics?.sharpness_variance || 'N/A'}</strong>
+              </div>
+              <div class="rounded-xl border border-slate-800 bg-slate-900 p-3">
+                <span class="text-slate-400 block text-[10px] uppercase font-bold">Mean Luminance</span>
+                <strong class="text-white">${a.quality_metrics?.mean_luminance || 'N/A'} / 255</strong>
+              </div>
+              <div class="rounded-xl border border-slate-800 bg-slate-900 p-3">
+                <span class="text-slate-400 block text-[10px] uppercase font-bold">Contrast (Std Dev)</span>
+                <strong class="text-white">${a.quality_metrics?.contrast_std || 'N/A'}</strong>
+              </div>
+            </div>
+            ${(a.quality_metrics?.quality_flags && a.quality_metrics.quality_flags.length) ? `
+              <p class="text-xs text-amber-300 bg-amber-500/10 border border-amber-500/20 p-2.5 rounded-xl">
+                ⚠️ ${a.quality_metrics.quality_flags.join(' ')}
+              </p>
+            ` : `
+              <p class="text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 p-2.5 rounded-xl">
+                ✓ Technical Grade: Optimal focus, contrast, and sensor illumination.
+              </p>
+            `}
+          </article>
+
+          <!-- Measurements & Algorithmic Indices -->
+          <article class="rounded-3xl border border-slate-800 bg-[#0c1322] p-6 shadow-xl space-y-3">
+            <p class="text-xs uppercase font-bold tracking-wider text-teal-400">Algorithmic Indices</p>
+            <div class="space-y-2 pt-1 text-xs">
+              ${Object.keys(a.measurements || {}).map(k => `
+                <div class="rounded-xl border border-slate-800 bg-slate-900 p-3 flex items-center justify-between">
+                  <span class="text-slate-400 uppercase font-bold text-[10px]">${k.replace(/_/g, ' ')}</span>
+                  <strong class="text-teal-300 font-mono text-sm">${a.measurements[k]}</strong>
+                </div>
+              `).join('')}
+            </div>
+          </article>
+        </div>
+
+        <!-- Clinical Next Steps & Red Flags -->
+        <article class="rounded-3xl border border-slate-800 bg-[#0c1322] p-6 lg:p-8 shadow-2xl space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="rounded-2xl border border-slate-800 bg-slate-900/80 p-5 space-y-3">
+              <p class="text-xs uppercase font-bold tracking-wider text-teal-400">Actionable Next Steps</p>
+              <ol class="space-y-2.5 text-xs text-slate-200">
+                ${(a.next_steps || []).map((step, sIdx) => `
+                  <li class="flex items-start gap-2.5">
+                    <span class="w-5 h-5 rounded-lg bg-teal-500/20 text-teal-300 border border-teal-500/30 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">${sIdx + 1}</span>
+                    <span class="leading-relaxed">${step}</span>
+                  </li>
+                `).join('')}
+              </ol>
+            </div>
+
+            <div class="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-5 space-y-3">
+              <p class="text-xs uppercase font-bold tracking-wider text-rose-400">Red-Flag Symptoms (Seek Immediate Care)</p>
+              <ul class="space-y-2 text-xs text-rose-200">
+                <li class="flex items-start gap-2"><span>⚡</span><span>Sudden severe chest pain, dyspnea, or hemoptysis (coughing blood).</span></li>
+                <li class="flex items-start gap-2"><span>⚡</span><span>High fever (>102°F), altered sensorium, severe persistent pain.</span></li>
+                <li class="flex items-start gap-2"><span>⚡</span><span>Rapid lesion bleeding, spontaneous ulceration, or acute swelling.</span></li>
+              </ul>
+            </div>
+          </div>
+        </article>
+      `;
+
+      return wrapper;
+    }
+
+    async function loadAnalysisResults() {
+      const lang = getCurrentLang();
+      const token = getToken() || '';
+      const repData = MULTILINGUAL_REPORTS[lang] || MULTILINGUAL_REPORTS.en;
+      const selectedModules = loadState('medfusion_selected_modules') || ['chest_xray', 'cbc'];
+
+      // Synchronize top banner texts with active language
+      const topEyebrow = document.querySelector('#top-eyebrow');
+      const topTitle = document.querySelector('#top-title');
+      const topSubtitle = document.querySelector('#top-subtitle');
+      const disclaimerText = document.querySelector('#disclaimer-text');
+
+      if (topEyebrow) topEyebrow.textContent = t('res_eyebrow');
+      if (topTitle) topTitle.textContent = t('res_title');
+      if (topSubtitle) topSubtitle.textContent = t('res_desc');
+      if (disclaimerText) disclaimerText.textContent = repData.meta.disclaimer;
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const activeId = urlParams.get('id') || localStorage.getItem('medfusion_active_analysis_id');
+
+      // Update download link
+      updateDownloadLink(activeId);
+
+      // Check if we have an active analysis ID to fetch live data
+      if (activeId) {
+        try {
+          const res = await fetch(`/api/analysis/${encodeURIComponent(activeId)}`, {
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+          });
+          if (res.ok) {
+            const liveData = await res.json();
+            if (liveData && liveData.analysis) {
+              resultsRoot.innerHTML = '';
+              resultsRoot.appendChild(renderLiveAnalysisCard(liveData, lang));
+              if (reportContainer) reportContainer.style.display = 'none';
+              if (detailedBtn) detailedBtn.style.display = 'none';
+              applyTranslations();
+              return;
+            }
+          }
+        } catch (fetchErr) {
+          console.warn('Could not fetch live analysis, falling back to cached report:', fetchErr);
+        }
+      }
+
+      // Fallback: Render Multi-Module Summary Card & Modular Cards
+      resultsRoot.innerHTML = '';
+      resultsRoot.appendChild(renderSummary(repData.fusion_summary, repData.meta));
+
+      // Render Individual Modular Cards
+      selectedModules.forEach(modKey => {
+        const mod = repData.modules[modKey] || repData.modules.chest_xray;
+        resultsRoot.appendChild(renderResultCard(modKey, mod, lang));
+      });
+
+      // Render Detailed Clinical Text Report
+      renderDetailedTextReport(selectedModules, repData, lang);
+
+      // Re-apply any general UI translations
+      applyTranslations();
+    }
+
+    let isDetailedVisible = true;
+    detailedBtn?.addEventListener('click', () => {
+      isDetailedVisible = !isDetailedVisible;
+      if (reportContainer) {
+        reportContainer.style.display = isDetailedVisible ? 'block' : 'none';
+      }
+      detailedBtn.textContent = isDetailedVisible ? 'Hide Detailed Text Report' : 'Show Detailed Text Report';
+    });
+
+    // Re-render when language changes
+    window.addEventListener('medfusion_lang_changed', () => {
+      loadAnalysisResults();
+    });
+
+    // Initial load
+    loadAnalysisResults();
+  </script>
+</body>
+</html>

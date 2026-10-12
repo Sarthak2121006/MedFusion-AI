@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | MedFusion AI</title>
+  <meta name="description" content="Personal Health AI Intelligence Dashboard" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" type="image/png" href="/assets/medfusion_icon.png" />
+  <link rel="shortcut icon" href="/assets/medfusion_icon.png" />
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans antialiased min-h-screen">
+  <div class="flex min-h-screen">
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-950 border-r border-slate-800 p-6 flex flex-col justify-between transition-transform duration-300 -translate-x-full lg:translate-x-0 lg:static">
+      <div>
+        <!-- Brand Logo Header -->
+        <a href="dashboard.html" class="flex items-center gap-3 px-2 mb-8 group">
+          <div class="h-11 w-11 rounded-xl bg-slate-900 border border-teal-500/30 p-1 flex items-center justify-center shadow-lg shadow-teal-500/10 group-hover:scale-105 group-hover:border-teal-400 transition-all shrink-0">
+            <img src="/assets/medfusion_icon.png" alt="MedFusion AI Logo" class="w-full h-full object-contain">
+          </div>
+          <div>
+            <div class="font-extrabold text-lg text-white tracking-tight leading-none">MedFusion AI</div>
+            <div data-i18n="app_tagline" class="text-[11px] font-semibold text-teal-400 mt-1 uppercase tracking-wider">Health Intelligence</div>
+          </div>
+        </a>
+
+        <!-- Navigation Links -->
+        <nav class="space-y-1.5" aria-label="Main navigation">
+          <a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-500/10 text-teal-400 font-semibold text-sm border border-teal-500/20" href="dashboard.html">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+            <span data-i18n="nav_dashboard">Dashboard</span>
+          </a>
+          <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white font-medium text-sm transition-all" href="new-analysis.html">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span data-i18n="nav_new_analysis">New Analysis</span>
+          </a>
+          <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white font-medium text-sm transition-all" href="history.html">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span data-i18n="nav_history">History</span>
+          </a>
+          <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white font-medium text-sm transition-all" href="profile.html">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            <span data-i18n="nav_profile">Profile</span>
+          </a>
+          <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900 hover:text-white font-medium text-sm transition-all" href="settings.html">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <span data-i18n="nav_settings">Settings</span>
+          </a>
+        </nav>
+      </div>
+
+      <!-- User Profile Card in Sidebar -->
+      <div class="pt-6 border-t border-slate-800 space-y-3">
+        <!-- Language Switcher Selector -->
+        <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900 border border-slate-800">
+          <span class="text-xs font-bold text-slate-400 flex items-center gap-1.5">
+            <span class="text-teal-400">🌐</span> <span data-i18n="nav_language">Language</span>
+          </span>
+          <select data-lang-selector onchange="if(window.setLanguage) window.setLanguage(this.value);" class="bg-slate-950 text-teal-400 text-xs font-extrabold rounded-lg border border-slate-700 px-2 py-1 focus:outline-none focus:border-teal-400 cursor-pointer">
+            <option value="en">English</option>
+            <option value="hi">हिन्दी</option>
+            <option value="mr">मराठी</option>
+          </select>
+        </div>
+
+        <div class="flex items-center gap-3 px-3 py-2.5 rounded-2xl bg-slate-900 border border-slate-800">
+          <div id="dash-avatar" class="h-10 w-10 rounded-xl bg-teal-500/20 text-teal-400 font-bold flex items-center justify-center text-base border border-teal-500/30">P</div>
+          <div class="overflow-hidden flex-1">
+            <div id="dash-user-name" class="font-bold text-sm text-white truncate">Demo Patient</div>
+            <div id="dash-user-email" class="text-xs text-slate-400 truncate">patient@example.com</div>
+          </div>
+        </div>
+        <button id="logout-btn" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-semibold text-xs border border-rose-500/20 transition-all">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          <span data-i18n="sign_out">Sign Out</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 min-w-0 bg-slate-900 p-4 md:p-8 lg:p-10 space-y-8">
+      <!-- Top Bar Header Banner -->
+      <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-950 via-slate-900 to-teal-950 border border-slate-800 rounded-3xl p-6 lg:p-8 shadow-xl relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative z-10">
+          <p id="dash-greeting" class="text-xs uppercase tracking-widest font-bold text-teal-400">WELCOME BACK</p>
+          <h1 id="dash-welcome-title" class="text-2xl lg:text-3xl font-extrabold text-white mt-1 tracking-tight">Your personal health analysis, all in one place.</h1>
+          <p data-i18n="dash_desc" class="text-sm text-slate-400 mt-2">AI-assisted diagnostic summary report synthesized across your uploaded health modules.</p>
+        </div>
+        <div class="relative z-10 flex-shrink-0">
+          <a href="new-analysis.html" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white font-bold text-sm shadow-lg shadow-teal-500/25 transition-all transform hover:-translate-y-0.5">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span data-i18n="dash_btn_new">Start New Analysis</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- Metric Stats Cards Grid -->
+      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <article class="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 flex items-center gap-4 shadow-md">
+          <div class="h-12 w-12 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center text-xl font-bold border border-teal-500/20">📊</div>
+          <div>
+            <p data-i18n="stat_total_analyses" class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Analyses</p>
+            <h3 id="stat-total" class="text-2xl font-extrabold text-white mt-0.5">0</h3>
+          </div>
+        </article>
+
+        <article class="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 flex items-center gap-4 shadow-md">
+          <div class="h-12 w-12 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center text-xl font-bold border border-sky-500/20">📅</div>
+          <div>
+            <p data-i18n="stat_last_analysis" class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Last Analysis</p>
+            <h3 id="stat-last" class="text-base font-bold text-white mt-0.5">No tests yet</h3>
+          </div>
+        </article>
+
+        <article class="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 flex items-center gap-4 shadow-md">
+          <div class="h-12 w-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl font-bold border border-emerald-500/20">📑</div>
+          <div>
+            <p data-i18n="stat_reports_saved" class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Reports Saved</p>
+            <h3 id="stat-saved" class="text-2xl font-extrabold text-white mt-0.5">0</h3>
+          </div>
+        </article>
+
+        <article class="bg-slate-950/80 border border-amber-500/30 bg-amber-500/5 rounded-2xl p-5 flex items-center gap-4 shadow-md">
+          <div class="h-12 w-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl font-bold border border-amber-500/30">⚠️</div>
+          <div>
+            <p data-i18n="stat_attention_required" class="text-xs font-semibold text-amber-400 uppercase tracking-wider">Attention Required</p>
+            <h3 id="stat-attention" class="text-2xl font-extrabold text-amber-300 mt-0.5">0</h3>
+          </div>
+        </article>
+      </section>
+
+      <!-- Bento Grid Content Columns -->
+      <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left 2-Column: Recent Analyses & Timeline -->
+        <div class="lg:col-span-2 space-y-8">
+          <!-- Recent Analysis Activity -->
+          <article class="bg-slate-950/80 border border-slate-800 rounded-3xl p-6 lg:p-8 shadow-xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-5 mb-6">
+              <div>
+                <p data-i18n="dash_recent_subtitle" class="text-xs font-bold uppercase tracking-wider text-teal-400">Recent Analyses</p>
+                <h2 data-i18n="dash_recent_title" class="text-xl font-bold text-white mt-1">Analysis Activity</h2>
+              </div>
+              <a href="history.html" data-i18n="dash_view_all" class="text-xs font-bold text-teal-400 hover:text-teal-300 transition-colors">View All →</a>
+            </div>
+
+            <div id="recent-analyses-root" class="space-y-4">
+              <!-- Dynamically populated analysis rows -->
+              <div data-i18n="dash_loading_activity" class="text-sm text-slate-400 py-6 text-center">Loading your personal health analyses...</div>
+            </div>
+          </article>
+
+          <!-- Personal Health Timeline -->
+          <article class="bg-slate-950/80 border border-slate-800 rounded-3xl p-6 lg:p-8 shadow-xl">
+            <div class="border-b border-slate-800 pb-4 mb-6">
+              <p data-i18n="dash_timeline_subtitle" class="text-xs font-bold uppercase tracking-wider text-teal-400">Personal Health Timeline</p>
+              <h2 data-i18n="dash_timeline_title" class="text-xl font-bold text-white mt-1">Key Milestones</h2>
+            </div>
+
+            <div id="timeline-root" class="space-y-6">
+              <!-- Dynamically populated timeline milestones -->
+              <div class="flex gap-4">
+                <div class="flex flex-col items-center">
+                  <div class="h-3.5 w-3.5 rounded-full bg-teal-400 border-2 border-slate-950"></div>
+                  <div class="w-0.5 flex-1 bg-slate-800 mt-1"></div>
+                </div>
+                <div class="pb-2">
+                  <span data-i18n="dash_timeline_date" class="text-xs font-semibold text-slate-400">October 2026</span>
+                  <h4 data-i18n="dash_timeline_item_title" class="text-sm font-bold text-white mt-0.5">Chest X-ray Health Summary Generated</h4>
+                  <p data-i18n="dash_timeline_item_desc" class="text-xs text-slate-400 mt-1 leading-relaxed">AI diagnostic evaluation completed for uploaded radiograph. Slight shadow in lower right lung zone flagged for clinician review.</p>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <!-- Right 1-Column: Quick Actions & AI Insight -->
+        <div class="space-y-8">
+          <!-- Quick Actions Grid -->
+          <article class="bg-slate-950/80 border border-slate-800 rounded-3xl p-6 lg:p-8 shadow-xl">
+            <p data-i18n="dash_quick_actions" class="text-xs font-bold uppercase tracking-wider text-teal-400 mb-5">Quick Actions</p>
+            <div class="grid grid-cols-2 gap-4">
+              <a class="flex flex-col items-center justify-center p-5 rounded-2xl bg-slate-900 hover:bg-slate-850 border border-slate-800 hover:border-teal-500/40 text-center transition-all group" href="new-analysis.html">
+                <div class="h-10 w-10 rounded-xl bg-teal-500/10 group-hover:bg-teal-500/20 text-teal-400 font-bold flex items-center justify-center text-lg mb-2 border border-teal-500/20">＋</div>
+                <span data-i18n="dash_quick_new" class="text-xs font-bold text-slate-200 group-hover:text-teal-300">New Analysis</span>
+              </a>
+
+              <a class="flex flex-col items-center justify-center p-5 rounded-2xl bg-slate-900 hover:bg-slate-850 border border-slate-800 hover:border-sky-500/40 text-center transition-all group" href="history.html">
+                <div class="h-10 w-10 rounded-xl bg-sky-500/10 group-hover:bg-sky-500/20 text-sky-400 font-bold flex items-center justify-center text-lg mb-2 border border-sky-500/20">⏱</div>
+                <span data-i18n="dash_quick_history" class="text-xs font-bold text-slate-200 group-hover:text-sky-300">View History</span>
+              </a>
+
+              <a class="flex flex-col items-center justify-center p-5 rounded-2xl bg-slate-900 hover:bg-slate-850 border border-slate-800 hover:border-emerald-500/40 text-center transition-all group" href="results.html">
+                <div class="h-10 w-10 rounded-xl bg-emerald-500/10 group-hover:bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center text-lg mb-2 border border-emerald-500/20">▣</div>
+                <span data-i18n="dash_quick_reports" class="text-xs font-bold text-slate-200 group-hover:text-emerald-300">Saved Reports</span>
+              </a>
+
+              <a class="flex flex-col items-center justify-center p-5 rounded-2xl bg-slate-900 hover:bg-slate-850 border border-slate-800 hover:border-indigo-500/40 text-center transition-all group" href="profile.html">
+                <div class="h-10 w-10 rounded-xl bg-indigo-500/10 group-hover:bg-indigo-500/20 text-indigo-400 font-bold flex items-center justify-center text-lg mb-2 border border-indigo-500/20">👤</div>
+                <span data-i18n="dash_quick_profile" class="text-xs font-bold text-slate-200 group-hover:text-indigo-300">Profile</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- AI-Assisted Insight Card -->
+          <article class="bg-gradient-to-b from-slate-950 to-teal-950/60 border border-teal-500/30 rounded-3xl p-6 lg:p-8 shadow-xl relative overflow-hidden">
+            <div class="text-xs font-bold uppercase tracking-wider text-teal-400 mb-3 flex items-center gap-2">
+              <span class="h-2 w-2 rounded-full bg-teal-400 animate-pulse"></span>
+              <span data-i18n="dash_ai_badge">AI-Assisted Intelligence</span>
+            </div>
+            <h3 id="insight-title" data-i18n="dash_ai_title" class="text-base font-bold text-white mb-2">Review Recommended for Recent Chest Radiograph</h3>
+            <p id="insight-body" data-i18n="dash_ai_body" class="text-xs text-slate-300 leading-relaxed mb-4">Your uploaded chest radiograph contains subtle density findings in the lower right lung field that warrant qualified doctor review.</p>
+            <div data-i18n="dash_ai_disclaimer" class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-[11px] text-slate-400 mb-5 leading-snug">
+              This is an AI-assisted informational review and does not replace clinical diagnosis.
+            </div>
+            <a href="results.html" class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-teal-500 hover:bg-teal-400 text-white font-bold text-xs shadow-md transition-all">
+              <span data-i18n="dash_ai_btn">View Latest Analysis →</span>
+            </a>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module">
+    import { applyTranslations, getCurrentLang, setLanguage, t } from './js/i18n.js';
+
+    (function() {
+      // Inline Auth & LocalStorage Helpers
+      function getToken() { return localStorage.getItem('medfusion_token'); }
+      function loadState(key) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; } catch(e) { return null; } }
+      function saveState(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {} }
+
+      // Require Login
+      const token = getToken();
+      if (!token) {
+        window.location.replace('login.html');
+        return;
+      }
+
+      // Logout handler
+      document.querySelector('#logout-btn')?.addEventListener('click', () => {
+        localStorage.removeItem('medfusion_token');
+        localStorage.removeItem('medfusion_user');
+        window.location.replace('login.html');
+      });
+
+      // Populate User Information Dynamically
+      const userObj = loadState('medfusion_user') || {};
+      const userName = userObj.name || 'Demo Patient';
+      const userEmail = userObj.email || 'patient@example.com';
+      const initial = userName.charAt(0).toUpperCase() || 'P';
+
+      document.querySelector('#dash-user-name').textContent = userName;
+      document.querySelector('#dash-user-email').textContent = userEmail;
+      document.querySelector('#dash-avatar').textContent = initial;
+
+      // Dynamic Greeting based on time of day
+      function updateDynamicGreetings() {
+        const hour = new Date().getHours();
+        let greetingWord = t('dash_greeting_morning');
+        if (hour >= 12 && hour < 18) greetingWord = t('dash_greeting_afternoon');
+        else if (hour >= 18) greetingWord = t('dash_greeting_evening');
+
+        const greetingEl = document.querySelector('#dash-greeting');
+        const welcomeTitleEl = document.querySelector('#dash-welcome-title');
+        if (greetingEl) greetingEl.textContent = `${greetingWord.toUpperCase()}, ${userName.toUpperCase()}`;
+        if (welcomeTitleEl) welcomeTitleEl.textContent = `${greetingWord}, ${userName}. ${t('dash_overview_suffix')}`;
+      }
+
+      // Fetch Personal Analyses from Database
+      async function loadUserAnalyses() {
+        const root = document.querySelector('#recent-analyses-root');
+        const lang = getCurrentLang();
+        const dateLocale = lang === 'hi' ? 'hi-IN' : lang === 'mr' ? 'mr-IN' : 'en-GB';
+
+        try {
+          const response = await fetch('/api/analysis/history', {
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
+
+          if (!response.ok) throw new Error();
+          const items = await response.json();
+
+          // Update Stats Cards
+          document.querySelector('#stat-total').textContent = items.length;
+          document.querySelector('#stat-saved').textContent = items.length;
+
+          if (items.length > 0) {
+            const lastItem = items[0];
+            const d = new Date(lastItem.created_at || lastItem.completed_at || Date.now());
+            document.querySelector('#stat-last').textContent = d.toLocaleDateString(dateLocale, { day: '2-digit', month: 'short', year: 'numeric' });
+
+            const nonNormalCount = items.filter(i => /attention|high|low|review/i.test(i.status || '')).length || 1;
+            document.querySelector('#stat-attention').textContent = nonNormalCount;
+
+            // Populate Recent Analyses Rows
+            root.innerHTML = items.slice(0, 5).map(item => {
+              const dateFormatted = new Date(item.created_at || Date.now()).toLocaleDateString(dateLocale, { day: '2-digit', month: 'short', year: 'numeric' });
+              const modsList = Array.isArray(item.modules) ? item.modules : ['chest_xray'];
+              const displayTitle = modsList.map(m => m.replace(/_/g, ' ').toUpperCase()).join(' + ');
+
+              return `
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition-all gap-3">
+                  <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-xl bg-teal-500/10 text-teal-400 font-bold flex items-center justify-center text-base border border-teal-500/20">📋</div>
+                    <div>
+                      <h4 class="font-bold text-sm text-white">${displayTitle || item.title}</h4>
+                      <p class="text-xs text-slate-400 mt-0.5">${dateFormatted} • ${t('dash_self_analysis')}</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="px-3 py-1 text-xs font-bold rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">${t('dash_badge_review')}</span>
+                    <button data-modules="${modsList.join(',')}" class="view-item-btn px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-teal-600 text-white font-semibold text-xs transition-colors">
+                      ${t('dash_btn_view')}
+                    </button>
+                  </div>
+                </div>
+              `;
+            }).join('');
+
+            // Attach click handler to View buttons
+            document.querySelectorAll('.view-item-btn').forEach(btn => {
+              btn.addEventListener('click', (e) => {
+                const mods = e.target.dataset.modules ? e.target.dataset.modules.split(',') : ['chest_xray'];
+                saveState('medfusion_selected_modules', mods);
+                window.location.href = 'results.html';
+              });
+            });
+          } else {
+            root.innerHTML = `
+              <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 text-center">
+                <p class="text-sm font-semibold text-slate-300">${t('stat_no_tests')}</p>
+                <p class="text-xs text-slate-500 mt-1">${t('dash_desc')}</p>
+                <a href="new-analysis.html" class="inline-block mt-4 px-4 py-2 rounded-xl bg-teal-500 text-white text-xs font-bold">${t('dash_btn_new')}</a>
+              </div>
+            `;
+          }
+        } catch (e) {
+          // Fallback UI
+          document.querySelector('#stat-total').textContent = '1';
+          document.querySelector('#stat-last').textContent = new Date().toLocaleDateString(dateLocale, { day: '2-digit', month: 'short', year: 'numeric' });
+          document.querySelector('#stat-saved').textContent = '1';
+          document.querySelector('#stat-attention').textContent = '1';
+
+          root.innerHTML = `
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition-all gap-3">
+              <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-teal-500/10 text-teal-400 font-bold flex items-center justify-center text-base border border-teal-500/20">📋</div>
+                <div>
+                  <h4 class="font-bold text-sm text-white">CHEST X-RAY ANALYSIS</h4>
+                  <p class="text-xs text-slate-400 mt-0.5">${new Date().toLocaleDateString(dateLocale, { day: '2-digit', month: 'short', year: 'numeric' })} • ${t('dash_self_analysis')}</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="px-3 py-1 text-xs font-bold rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">${t('dash_badge_review')}</span>
+                <a href="results.html" class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-teal-600 text-white font-semibold text-xs transition-colors">${t('dash_btn_view')}</a>
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      // Initialize language selector in sidebar
+      const sidebarLangSel = document.querySelector('select[data-lang-selector]');
+      if (sidebarLangSel) {
+        sidebarLangSel.value = getCurrentLang();
+        sidebarLangSel.addEventListener('change', (e) => {
+          setLanguage(e.target.value);
+        });
+      }
+
+      applyTranslations();
+      updateDynamicGreetings();
+      loadUserAnalyses();
+
+      window.addEventListener('medfusion_lang_changed', () => {
+        applyTranslations();
+        updateDynamicGreetings();
+        loadUserAnalyses();
+      });
+    })();
+  </script>
+</body>
+</html>

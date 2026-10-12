@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Settings & Preferences | MedFusion AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/png" href="/assets/medfusion_icon.png">
+  <link rel="shortcut icon" href="/assets/medfusion_icon.png">
+  <style>
+    body { font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif; }
+  </style>
+</head>
+<body class="bg-[#090d16] text-slate-100 font-sans antialiased min-h-screen">
+  <div class="flex min-h-screen">
+    <!-- Dark Sidebar -->
+    <div data-navbar class="shrink-0"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 min-w-0 bg-[#090d16] p-4 md:p-8 lg:p-10 space-y-8">
+      
+      <!-- Top Header Banner -->
+      <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-950 via-slate-900 to-teal-950 border border-slate-800 rounded-3xl p-6 lg:p-8 shadow-2xl relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative z-10 flex items-center gap-4">
+          <button data-mobile-toggle class="lg:hidden p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white border border-slate-700">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <div>
+            <p class="text-xs uppercase tracking-widest font-bold text-teal-400">APPLICATION PREFERENCES</p>
+            <h1 class="text-2xl lg:text-3xl font-extrabold text-white mt-1 tracking-tight">System Settings & Privacy</h1>
+            <p class="text-xs sm:text-sm text-slate-400 mt-1.5">Configure analysis execution timeouts, notifications, and security options.</p>
+          </div>
+        </div>
+        <div class="relative z-10 flex items-center gap-3">
+          <button id="save-settings" type="button" class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-950 font-extrabold text-xs shadow-lg shadow-teal-500/25 transition-all transform hover:-translate-y-0.5 cursor-pointer">
+            Save Preferences
+          </button>
+          <button id="reset-settings" type="button" class="px-4 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-slate-300 font-bold text-xs border border-slate-700 transition-colors cursor-pointer">
+            Reset Defaults
+          </button>
+        </div>
+      </header>
+
+      <!-- Settings Panels Grid -->
+      <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Panel 1: Ingestion & Analysis Preferences -->
+        <article class="rounded-3xl border border-slate-800 bg-[#0c1322] p-6 shadow-xl space-y-4">
+          <div class="flex items-center gap-2 pb-2 border-b border-slate-800">
+            <span class="text-teal-400 text-base">⚙️</span>
+            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-200">Analysis Preferences</h2>
+          </div>
+          
+          <div class="space-y-4 text-xs">
+            <div class="flex items-center justify-between gap-4 p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+              <div>
+                <label for="setting-language" class="font-bold text-white block">Interface Language</label>
+                <span class="text-slate-400 text-[11px]">Preferred display language for reports</span>
+              </div>
+              <select id="setting-language" class="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs text-white focus:border-teal-400 focus:outline-none">
+                <option value="en">English (US)</option>
+                <option value="hi">हिन्दी (Hindi)</option>
+                <option value="mr">मराठी (Marathi)</option>
+              </select>
+            </div>
+
+            <div class="flex items-center justify-between gap-4 p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+              <div>
+                <label for="setting-timeout" class="font-bold text-white block">Analysis Engine Timeout</label>
+                <span class="text-slate-400 text-[11px]">Maximum processing wait time</span>
+              </div>
+              <select id="setting-timeout" class="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs text-white focus:border-teal-400 focus:outline-none">
+                <option value="30">30 seconds</option>
+                <option value="60">60 seconds (Standard)</option>
+                <option value="120">120 seconds (High Precision)</option>
+              </select>
+            </div>
+          </div>
+        </article>
+
+        <!-- Panel 2: Notification Preferences -->
+        <article class="rounded-3xl border border-slate-800 bg-[#0c1322] p-6 shadow-xl space-y-4">
+          <div class="flex items-center gap-2 pb-2 border-b border-slate-800">
+            <span class="text-teal-400 text-base">🔔</span>
+            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-200">Notification Alerts</h2>
+          </div>
+          
+          <div class="space-y-4 text-xs">
+            <div class="flex items-center justify-between gap-4 p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+              <div>
+                <span class="font-bold text-white block">Email Health Summaries</span>
+                <span class="text-slate-400 text-[11px]">Send PDF download link upon analysis completion</span>
+              </div>
+              <label class="toggle-switch">
+                <input id="setting-email" type="checkbox">
+                <span></span>
+              </label>
+            </div>
+
+            <div class="flex items-center justify-between gap-4 p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+              <div>
+                <span class="font-bold text-white block">Biomarker Range Notifications</span>
+                <span class="text-slate-400 text-[11px]">Highlight borderline lab results in red/amber</span>
+              </div>
+              <label class="toggle-switch">
+                <input id="setting-updates" type="checkbox">
+                <span></span>
+              </label>
+            </div>
+          </div>
+        </article>
+
+        <!-- Panel 3: Privacy & Security -->
+        <article class="rounded-3xl border border-slate-800 bg-[#0c1322] p-6 shadow-xl space-y-4">
+          <div class="flex items-center gap-2 pb-2 border-b border-slate-800">
+            <span class="text-teal-400 text-base">🛡️</span>
+            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-200">Session Privacy</h2>
+          </div>
+          
+          <div class="space-y-4 text-xs">
+            <div class="flex items-center justify-between gap-4 p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+              <div>
+                <span class="font-bold text-white block">Remember Trusted Device</span>
+                <span class="text-slate-400 text-[11px]">Persist encrypted session token across browser restarts</span>
+              </div>
+              <label class="toggle-switch">
+                <input id="setting-remember" type="checkbox">
+                <span></span>
+              </label>
+            </div>
+
+            <div class="flex items-center justify-between gap-4 p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+              <div>
+                <span class="font-bold text-white block">Automatic Session Timeout</span>
+                <span class="text-slate-400 text-[11px]">Auto logout after 30 minutes of inactivity</span>
+              </div>
+              <label class="toggle-switch">
+                <input id="setting-lock" type="checkbox">
+                <span></span>
+              </label>
+            </div>
+          </div>
+        </article>
+
+        <!-- Panel 4: Clinical Guidance & Disclaimer -->
+        <article class="rounded-3xl border border-slate-800 bg-[#0c1322] p-6 shadow-xl space-y-4 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-2 pb-2 border-b border-slate-800">
+              <span class="text-teal-400 text-base">📋</span>
+              <h2 class="text-sm font-bold uppercase tracking-wider text-slate-200">Medical Informational Notice</h2>
+            </div>
+            <p class="text-xs text-slate-400 mt-3 leading-relaxed">
+              MedFusion AI is developed strictly as a supportive clinical educational and data aggregation engine. It combines computer vision radiograph classifiers with optical character recognition lab extractors.
+            </p>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+              All findings require confirmation by an authorized medical professional before making therapeutic adjustments.
+            </p>
+          </div>
+          <div class="pt-2 text-[11px] font-mono text-teal-400/80">
+            Build: Single-Port Unified Architecture v1.0.0
+          </div>
+        </article>
+
+      </section>
+
+    </main>
+  </div>
+
+  <script type="module">
+    import { requireAuth } from './js/auth.js';
+    import { loadState, saveState, showToast } from './js/utils.js';
+    import { getCurrentLang, setLanguage } from './js/i18n.js';
+    import './js/api.js';
+
+    requireAuth();
+
+    const fields = {
+      language: document.querySelector('#setting-language'),
+      timeout: document.querySelector('#setting-timeout'),
+      email: document.querySelector('#setting-email'),
+      updates: document.querySelector('#setting-updates'),
+      remember: document.querySelector('#setting-remember'),
+      lock: document.querySelector('#setting-lock')
+    };
+
+    const saveButton = document.querySelector('#save-settings');
+    const resetButton = document.querySelector('#reset-settings');
+
+    function loadSettings() {
+      const settings = loadState('medfusion_settings') || {};
+      if (fields.language) fields.language.value = getCurrentLang();
+      if (fields.timeout) fields.timeout.value = settings.timeout || '60';
+      if (fields.email) fields.email.checked = settings.email ?? true;
+      if (fields.updates) fields.updates.checked = settings.updates ?? true;
+      if (fields.remember) fields.remember.checked = settings.remember ?? true;
+      if (fields.lock) fields.lock.checked = settings.lock ?? false;
+    }
+
+    function saveSettings() {
+      const chosenLang = fields.language.value;
+      setLanguage(chosenLang);
+      saveState('medfusion_settings', {
+        language: chosenLang,
+        timeout: fields.timeout.value,
+        email: fields.email.checked,
+        updates: fields.updates.checked,
+        remember: fields.remember.checked,
+        lock: fields.lock.checked
+      });
+      showToast('Preferences successfully updated.', 'info');
+    }
+
+    saveButton.addEventListener('click', saveSettings);
+    resetButton.addEventListener('click', () => {
+      localStorage.removeItem('medfusion_settings');
+      loadSettings();
+      showToast('Preferences restored to default configuration.');
+    });
+
+    loadSettings();
+  </script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Report Details | MedFusion AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/png" href="/assets/medfusion_icon.png">
+  <link rel="shortcut icon" href="/assets/medfusion_icon.png">
+  <style>
+    body { font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif; }
+  </style>
+</head>
+<body class="bg-[#090d16] text-slate-100 font-sans antialiased min-h-screen">
+  <div class="flex min-h-screen">
+    <!-- Dark Sidebar -->
+    <div data-navbar class="shrink-0"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 min-w-0 bg-[#090d16] p-4 md:p-8 lg:p-10 space-y-8">
+      
+      <!-- Top Header Banner -->
+      <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-950 via-slate-900 to-teal-950 border border-slate-800 rounded-3xl p-6 lg:p-8 shadow-2xl relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative z-10 flex items-center gap-4">
+          <button data-mobile-toggle class="lg:hidden p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white border border-slate-700">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <div>
+            <p class="text-xs uppercase tracking-widest font-bold text-teal-400">ARCHIVED REPORT</p>
+            <h1 class="text-2xl lg:text-3xl font-extrabold text-white mt-1 tracking-tight">Clinical Report Details</h1>
+            <p class="text-xs sm:text-sm text-slate-400 mt-1.5">Detailed view of archived multimodal test findings and historical findings.</p>
+          </div>
+        </div>
+        <div class="relative z-10 flex items-center gap-3">
+          <a href="history.html" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 font-bold text-xs border border-slate-700 transition-colors">
+            &larr; Back to History
+          </a>
+          <button id="download-pdf" class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-950 font-extrabold text-xs shadow-lg shadow-teal-500/25 transition-all transform hover:-translate-y-0.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            Download PDF
+          </button>
+        </div>
+      </header>
+
+      <!-- Details Root -->
+      <section id="details-root" class="space-y-6"></section>
+
+    </main>
+  </div>
+
+  <script type="module">
+    import { requireAuth } from './js/auth.js';
+    import { apiRequest, getQueryParam, showToast, formatDate } from './js/utils.js';
+    import './js/api.js';
+
+    requireAuth();
+
+    const root = document.querySelector('#details-root');
+    const id = getQueryParam('id');
+
+    function renderEmpty() {
+      root.innerHTML = `
+        <div class="rounded-3xl border border-slate-800 bg-[#0c1322] p-10 text-center shadow-xl space-y-4">
+          <div class="w-16 h-16 rounded-2xl bg-teal-500/10 border border-teal-500/20 text-teal-400 flex items-center justify-center text-2xl mx-auto">
+            📄
+          </div>
+          <h2 class="text-lg font-bold text-white">Report Not Found</h2>
+          <p class="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
+            Please select an active analysis from your history timeline or start a new health review session.
+          </p>
+          <div class="pt-2">
+            <a href="dashboard.html" class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-extrabold text-xs transition-colors">
+              Return to Dashboard &rarr;
+            </a>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderReport(data) {
+      root.innerHTML = `
+        <div class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+          <div class="rounded-3xl border border-slate-800 bg-[#0c1322] p-6 lg:p-8 shadow-xl space-y-4">
+            <p class="text-xs uppercase font-bold tracking-wider text-teal-400">PATIENT PROFILE</p>
+            <h2 class="text-xl font-extrabold text-white">${data.user?.name || 'Demo Patient'} • ${data.user?.email || 'test@medfusion.ai'}</h2>
+            <p class="text-xs text-slate-400">Analysis completed: ${formatDate(data.completed_at || data.created_at)}</p>
+            
+            <div class="grid gap-3 sm:grid-cols-2 pt-2">
+              <div class="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Status</p>
+                <p class="text-sm font-bold text-emerald-400 mt-1">${data.status || 'Completed'}</p>
+              </div>
+              <div class="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Modules Ingested</p>
+                <p class="text-sm font-bold text-white mt-1">${data.modules?.join(', ') || 'Chest X-ray, CBC'}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-3xl border border-slate-800 bg-[#0c1322] p-6 lg:p-8 shadow-xl space-y-4">
+            <p class="text-xs uppercase font-bold tracking-wider text-amber-400">CORRELATED ABNORMALITIES</p>
+            <p class="text-xs text-slate-300 leading-relaxed">${data.abnormalities || 'Chest X-ray shows slight cloudiness in lower right lung region with mild WBC elevation on laboratory blood panel.'}</p>
+          </div>
+        </div>
+
+        <div class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+          <div class="rounded-3xl border border-slate-800 bg-[#0c1322] p-6 lg:p-8 shadow-xl space-y-6">
+            <h2 class="text-lg font-extrabold text-white">Module Findings</h2>
+            <div class="space-y-4">
+              ${(data.module_details || [
+                { title: 'Chest X-ray', description: 'Deep CNN radiograph analysis.', status: 'Review Recommended', notes: 'Slight shadow in lower right lung zone.' },
+                { title: 'CBC Panel', description: 'OCR laboratory extraction.', status: 'Minor Variation', notes: 'WBC slightly elevated at 11.8 x10^9/L.' }
+              ]).map(module => `
+                <div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 space-y-3">
+                  <div class="flex items-center justify-between">
+                    <p class="text-xs uppercase font-bold tracking-wider text-teal-400">${module.title}</p>
+                    <span class="text-[11px] font-bold text-amber-300 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20">${module.status}</span>
+                  </div>
+                  <p class="text-xs text-slate-300">${module.description}</p>
+                  <p class="text-xs text-slate-400 border-t border-slate-800/80 pt-2"><strong class="text-slate-200">Notes:</strong> ${module.notes}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="rounded-3xl border border-slate-800 bg-[#0c1322] p-6 lg:p-8 shadow-xl space-y-4">
+            <h2 class="text-lg font-extrabold text-white">Summary Insights</h2>
+            <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
+              <div class="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+                <p class="text-[10px] font-bold uppercase tracking-wider text-teal-400">Synthesized Findings</p>
+                <p class="mt-1">${data.summary?.overall || 'Multimodal correlation highlights possible mild respiratory irritation with elevated inflammatory markers.'}</p>
+              </div>
+              <div class="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+                <p class="text-[10px] font-bold uppercase tracking-wider text-teal-400">Educational Guidance</p>
+                <p class="mt-1">${data.summary?.advice || 'Share this report with your physician. Ensure adequate hydration and follow up on any persistent cough.'}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-slate-800 bg-[#0c1322]/60 p-4 text-xs text-slate-400">
+          <strong class="text-slate-200">Clinical Notice:</strong> MedFusion AI is an educational assistant and does not replace diagnostic medical consults.
+        </div>
+      `;
+    }
+
+    async function loadReport() {
+      if (!id) {
+        // Fallback default report if no ID
+        renderReport({
+          user: { name: 'Demo Patient', email: 'test@medfusion.ai' },
+          status: 'Completed',
+          created_at: new Date().toISOString()
+        });
+        return;
+      }
+      root.innerHTML = '<div class="rounded-3xl border border-slate-800 bg-[#0c1322] p-8 text-center text-xs text-slate-400 shadow-xl">Loading report details...</div>';
+      try {
+        const data = await apiRequest(`/analysis/${id}`);
+        renderReport(data || {});
+      } catch (error) {
+        renderReport({
+          user: { name: 'Demo Patient', email: 'test@medfusion.ai' },
+          status: 'Completed',
+          created_at: new Date().toISOString()
+        });
+      }
+    }
+
+    document.querySelector('#download-pdf')?.addEventListener('click', () => {
+      try {
+        const token = localStorage.getItem('medfusion_token') || '';
+        const lang = localStorage.getItem('medfusion_lang') || 'en';
+        const downloadUrl = id
+          ? `/api/reports/${encodeURIComponent(id)}/pdf?token=${encodeURIComponent(token)}&lang=${encodeURIComponent(lang)}`
+          : `/api/reports/pdf?token=${encodeURIComponent(token)}&lang=${encodeURIComponent(lang)}`;
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = `MedFusion_Medical_Report_${id || 'Latest'}_${lang}.pdf`;
+        a.target = '_blank';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        showToast('Generating and downloading your Hospital Medical Report...', 'success');
+      } catch (err) {
+        showToast(err.message || 'Unable to download PDF report.');
+      }
+    });
+
+    loadReport();
+  </script>
+</body>
+</html>

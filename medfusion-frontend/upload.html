@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Upload Scans & Reports | MedFusion AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/png" href="/assets/medfusion_icon.png">
+  <link rel="shortcut icon" href="/assets/medfusion_icon.png">
+  <style>
+    body { font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif; }
+    .file-drop-active {
+      border-color: #14b8a6 !important;
+      background-color: rgba(4, 47, 46, 0.3) !important;
+    }
+  </style>
+</head>
+<body class="bg-[#090d16] text-slate-100 font-sans antialiased min-h-screen">
+  <div class="flex min-h-screen">
+    <!-- Dark Sidebar -->
+    <div data-navbar class="shrink-0"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 min-w-0 bg-[#090d16] p-4 md:p-8 lg:p-10 space-y-8">
+      
+      <!-- Top Header Banner -->
+      <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-950 via-slate-900 to-teal-950 border border-slate-800 rounded-3xl p-6 lg:p-8 shadow-2xl relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative z-10 flex items-center gap-4">
+          <button data-mobile-toggle class="lg:hidden p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white border border-slate-700">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <div class="hidden sm:flex h-14 w-14 rounded-2xl bg-slate-900/90 border border-teal-500/30 p-1.5 items-center justify-center shadow-lg shadow-teal-500/10 shrink-0">
+            <img src="/assets/medfusion_icon.png" alt="MedFusion AI" class="w-full h-full object-contain">
+          </div>
+          <div>
+            <p class="text-xs uppercase tracking-widest font-bold text-teal-400">DOCUMENT INGESTION</p>
+            <h1 class="text-2xl lg:text-3xl font-extrabold text-white mt-1 tracking-tight">Upload Scans & Lab Documents</h1>
+            <p class="text-xs sm:text-sm text-slate-400 mt-1.5">Attach medical imaging files and laboratory test reports for your active modules.</p>
+          </div>
+        </div>
+        <div class="relative z-10 flex items-center gap-3">
+          <a href="new-analysis.html" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 font-bold text-xs border border-slate-700 transition-colors">
+            &larr; Modify Modules
+          </a>
+          <button id="submit-upload" class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-950 font-extrabold text-sm shadow-lg shadow-teal-500/25 transition-all transform hover:-translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none" disabled>
+            <span>Start AI Fusion</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Upload Zones Container -->
+      <section class="space-y-6">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-bold uppercase tracking-wider text-slate-300">Required Documents for Selected Modules</h2>
+          <span id="upload-progress-text" class="text-xs font-semibold text-teal-400">0 of 0 uploaded</span>
+        </div>
+
+        <div id="upload-grid" class="grid gap-6"></div>
+      </section>
+
+      <!-- Privacy & HIPAA Safeguards Note -->
+      <div class="rounded-2xl border border-slate-800 bg-[#0c1322]/60 p-4 flex items-start gap-3 text-xs text-slate-400">
+        <span class="text-teal-400 text-base">🔒</span>
+        <p class="leading-relaxed">
+          <strong class="text-slate-200">Local Security Guarantee:</strong> All medical images and lab reports are processed on your dedicated single-port local server. No personal medical information is published to public third-party indexers.
+        </p>
+      </div>
+
+    </main>
+  </div>
+
+  <script type="module">
+    import { requireAuth } from './js/auth.js';
+    import { loadState, saveState, showToast, formatFileSize } from './js/utils.js';
+    import './js/api.js';
+
+    requireAuth();
+
+    const modules = {
+      chest_xray: { title: 'Chest Radiograph (X-ray)', icon: '🫁', type: 'Image Analysis', accept: '.png,.jpg,.jpeg,.pdf', hint: 'Frontal or lateral chest X-ray in PNG, JPG, or PDF.' },
+      bone_xray: { title: 'Bone Fracture Radiograph', icon: '🦴', type: 'Image Analysis', accept: '.png,.jpg,.jpeg,.pdf', hint: 'Extremity, joint, or bone radiograph scan.' },
+      skin_image: { title: 'Skin / Lesion Image', icon: '🔍', type: 'Image Analysis', accept: '.png,.jpg,.jpeg,.pdf', hint: 'Close-up dermoscopic photo of the skin lesion.' },
+      cbc: { title: 'Complete Blood Count (CBC)', icon: '🩸', type: 'Laboratory OCR', accept: '.pdf,.png,.jpg,.jpeg', hint: 'Laboratory blood test report with Hb, WBC, and Platelet levels.' },
+      diabetes: { title: 'Diabetes / Glucose Report', icon: '🍬', type: 'Laboratory OCR', accept: '.pdf,.png,.jpg,.jpeg', hint: 'Fasting glucose, post-prandial, or HbA1c test report.' },
+      lipid_profile: { title: 'Lipid Profile Panel', icon: '❤️', type: 'Laboratory OCR', accept: '.pdf,.png,.jpg,.jpeg', hint: 'Cholesterol, HDL, LDL, and Triglycerides laboratory report.' },
+      kft: { title: 'Kidney Function Test (KFT)', icon: '🫘', type: 'Laboratory OCR', accept: '.pdf,.png,.jpg,.jpeg', hint: 'Renal panel showing Creatinine, BUN, and eGFR.' },
+      lft: { title: 'Liver Function Test (LFT)', icon: '🩺', type: 'Laboratory OCR', accept: '.pdf,.png,.jpg,.jpeg', hint: 'Hepatic panel showing SGOT, SGPT, and Bilirubin levels.' }
+    };
+
+    const selected = loadState('medfusion_selected_modules') || [];
+    const uploadGrid = document.querySelector('#upload-grid');
+    const submitButton = document.querySelector('#submit-upload');
+    const progressText = document.querySelector('#upload-progress-text');
+    const uploads = loadState('medfusion_uploaded_files') || {};
+    const maxSize = 25 * 1024 * 1024;
+
+    if (!selected.length) {
+      window.location.href = 'new-analysis.html';
+    }
+
+    function createZone(moduleKey) {
+      const config = modules[moduleKey] || { title: moduleKey, icon: '📄', type: 'Module', accept: '.png,.jpg,.pdf', hint: 'Upload document' };
+      const wrapper = document.createElement('section');
+      wrapper.className = 'rounded-3xl border border-slate-800 bg-[#0c1322] p-6 shadow-xl space-y-4';
+      wrapper.innerHTML = `
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-lg">
+              ${config.icon}
+            </div>
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-teal-400 bg-teal-500/10 px-2 py-0.5 rounded border border-teal-500/20">
+                ${config.type}
+              </span>
+              <h3 class="text-base font-extrabold text-white mt-1">${config.title}</h3>
+            </div>
+          </div>
+          <span class="text-xs text-slate-400 font-medium">Formats: ${config.accept.replace(/\./g, ' ').toUpperCase()}</span>
+        </div>
+
+        <div class="file-drop-zone border-2 border-dashed border-slate-700 hover:border-teal-400 bg-slate-900/60 hover:bg-teal-950/20 rounded-2xl p-6 sm:p-8 text-center cursor-pointer transition-all" data-zone="${moduleKey}">
+          <div class="w-12 h-12 mx-auto rounded-2xl bg-teal-500/10 border border-teal-500/20 text-teal-400 flex items-center justify-center text-xl mb-3">
+            📁
+          </div>
+          <p class="text-sm font-bold text-white drop-label">Drag & drop your file here, or click to browse</p>
+          <p class="text-xs text-slate-400 mt-1">${config.hint} (Max 25 MB)</p>
+          <input type="file" accept="${config.accept}" hidden data-input="${moduleKey}" multiple>
+        </div>
+
+        <div class="space-y-2" data-preview="${moduleKey}"></div>
+      `;
+
+      const dropZone = wrapper.querySelector('.file-drop-zone');
+      const fileInput = wrapper.querySelector('input[type=file]');
+      const previewRoot = wrapper.querySelector(`[data-preview="${moduleKey}"]`);
+
+      dropZone.addEventListener('click', () => fileInput.click());
+      dropZone.addEventListener('dragover', event => {
+        event.preventDefault();
+        dropZone.classList.add('file-drop-active');
+      });
+      dropZone.addEventListener('dragleave', () => dropZone.classList.remove('file-drop-active'));
+      dropZone.addEventListener('drop', event => {
+        event.preventDefault();
+        dropZone.classList.remove('file-drop-active');
+        if (event.dataTransfer?.files?.length) {
+          addFiles(moduleKey, Array.from(event.dataTransfer.files));
+        }
+      });
+      fileInput.addEventListener('change', () => addFiles(moduleKey, Array.from(fileInput.files)));
+
+      if (uploads[moduleKey]?.length) {
+        renderFiles(moduleKey, uploads[moduleKey], previewRoot);
+      }
+
+      return wrapper;
+    }
+
+    const rawFiles = {};
+
+    function addFiles(moduleKey, fileList) {
+      const valid = [];
+      for (const file of fileList) {
+        if (file.size > maxSize) {
+          showToast(`File too large: ${file.name} (Max 25MB)`);
+          continue;
+        }
+        valid.push({
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          lastModified: file.lastModified
+        });
+        rawFiles[moduleKey] = file;
+      }
+      if (!valid.length) return;
+      uploads[moduleKey] = (uploads[moduleKey] || []).concat(valid);
+      saveState('medfusion_uploaded_files', uploads);
+      renderPreviews();
+      updateSubmitState();
+    }
+
+    function renderFiles(moduleKey, files, root) {
+      root.innerHTML = '';
+      files.forEach((file, index) => {
+        const item = document.createElement('div');
+        item.className = 'rounded-xl border border-slate-700 bg-slate-900/90 p-3.5 flex items-center justify-between text-white';
+        item.innerHTML = `
+          <div class="flex items-center gap-3 overflow-hidden">
+            <span class="text-teal-400 text-lg">📄</span>
+            <div class="truncate">
+              <p class="text-xs font-bold text-slate-100 truncate">${file.name}</p>
+              <p class="text-[11px] text-slate-400">${formatFileSize(file.size)}</p>
+            </div>
+          </div>
+          <button type="button" class="text-xs font-bold text-rose-400 hover:text-rose-300 hover:underline px-2 py-1">
+            Remove
+          </button>
+        `;
+        item.querySelector('button').addEventListener('click', (e) => {
+          e.stopPropagation();
+          uploads[moduleKey].splice(index, 1);
+          delete rawFiles[moduleKey];
+          if (!uploads[moduleKey].length) delete uploads[moduleKey];
+          saveState('medfusion_uploaded_files', uploads);
+          renderPreviews();
+          updateSubmitState();
+        });
+        root.appendChild(item);
+      });
+    }
+
+    function renderPreviews() {
+      selected.forEach(moduleKey => {
+        const previewRoot = document.querySelector(`[data-preview="${moduleKey}"]`);
+        const zone = document.querySelector(`[data-zone="${moduleKey}"]`);
+        if (!previewRoot || !zone) return;
+
+        previewRoot.innerHTML = '';
+        const label = zone.querySelector('.drop-label');
+        if (uploads[moduleKey]?.length) {
+          renderFiles(moduleKey, uploads[moduleKey], previewRoot);
+          if (label) label.textContent = 'File attached. Click or drag to replace or add more.';
+        } else {
+          if (label) label.textContent = 'Drag & drop your file here, or click to browse';
+        }
+      });
+    }
+
+    function updateSubmitState() {
+      const completedCount = selected.filter(key => uploads[key]?.length > 0).length;
+      progressText.textContent = `${completedCount} of ${selected.length} uploaded`;
+      submitButton.disabled = completedCount === 0;
+    }
+
+    function init() {
+      selected.forEach(moduleKey => uploadGrid.append(createZone(moduleKey)));
+      renderPreviews();
+      updateSubmitState();
+
+      submitButton.addEventListener('click', async () => {
+        const keysWithFiles = Object.keys(rawFiles);
+        if (keysWithFiles.length > 0) {
+          submitButton.disabled = true;
+          submitButton.innerHTML = '<span>Uploading & Running AI Engine...</span><div class="inline-block animate-spin w-4 h-4 border-2 border-slate-900 border-t-transparent rounded-full ml-2"></div>';
+
+          try {
+            const activeKey = keysWithFiles[0];
+            const file = rawFiles[activeKey];
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('module', activeKey);
+
+            const token = localStorage.getItem('medfusion_token');
+            const res = await fetch('/api/analysis/upload-and-analyze', {
+              method: 'POST',
+              headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+              body: formData
+            });
+
+            const data = await res.json();
+            if (!res.ok || data.status === 'error') {
+              showToast(data.detail || 'Medical analysis rejected due to format or image quality check', 'error');
+              submitButton.disabled = false;
+              submitButton.innerHTML = '<span>Start AI Fusion</span>';
+              return;
+            }
+
+            localStorage.setItem('medfusion_active_analysis_id', data.analysis_id);
+            saveState('medfusion_uploaded_files', uploads);
+            window.location.href = `processing.html?id=${data.analysis_id}`;
+            return;
+          } catch (err) {
+            showToast('Unable to complete analysis: ' + err.message, 'error');
+            submitButton.disabled = false;
+            submitButton.innerHTML = '<span>Start AI Fusion</span>';
+            return;
+          }
+        }
+
+        saveState('medfusion_uploaded_files', uploads);
+        window.location.href = 'processing.html';
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>

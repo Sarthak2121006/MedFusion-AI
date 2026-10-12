@@ -1,0 +1,32 @@
+# Dependencies & Nested Clones
+node_modules/
+medfusion-frontend/node_modules/
+MedFusion-AI/
+
+# Python Virtual Environments & Bytecode
+.venv/
+*/.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment Variables & Secrets
+.env
+*.env.local
+
+# Database & Runtime Data
+medfusion.db
+medfusion.db-journal
+uploads/*
+!uploads/.gitkeep
+scratch/
+
+# IDE & OS Files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Build Artifacts
+dist/
+medfusion-frontend/dist/

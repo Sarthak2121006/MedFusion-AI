@@ -1,0 +1,959 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedFusion AI | Personal Health Intelligence</title>
+  <meta name="description" content="AI-assisted personal health intelligence combining medical imaging and laboratory reports into one unified multimodal summary.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" type="image/png" href="/assets/medfusion_icon.png">
+  <link rel="shortcut icon" href="/assets/medfusion_icon.png">
+  <style>
+    body {
+      font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    .glow-teal {
+      box-shadow: 0 0 60px -10px rgba(20, 184, 166, 0.22);
+    }
+    .glow-card {
+      box-shadow: 0 10px 30px -10px rgba(2, 6, 23, 0.7);
+    }
+    /* Smooth modal transition */
+    #login-modal {
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+    }
+    #login-modal.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    #login-modal:not(.hidden) {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+  </style>
+  <script type="module" src="./js/i18n.js"></script>
+</head>
+<body class="bg-[#090d16] text-slate-100 antialiased min-h-screen selection:bg-teal-500 selection:text-slate-950">
+
+  <!-- Ambient Radial Glows -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[50rem] h-[35rem] bg-teal-500/10 rounded-full blur-[140px]"></div>
+    <div class="absolute top-[50rem] -left-48 w-[32rem] h-[32rem] bg-emerald-500/5 rounded-full blur-[130px]"></div>
+    <div class="absolute top-[110rem] -right-48 w-[32rem] h-[32rem] bg-teal-500/5 rounded-full blur-[130px]"></div>
+  </div>
+
+  <!-- NAVIGATION HEADER -->
+  <header class="sticky top-0 z-40 bg-[#090d16]/85 backdrop-blur-xl border-b border-slate-800/80">
+    <nav class="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-8" aria-label="Main navigation">
+      
+      <!-- Brand Logo -->
+      <a href="index.html" class="flex items-center gap-3 group">
+        <div class="h-11 w-11 rounded-xl bg-slate-900 border border-teal-500/30 p-1 flex items-center justify-center shadow-lg shadow-teal-500/20 group-hover:scale-105 group-hover:border-teal-400 transition-all shrink-0">
+          <img src="/assets/medfusion_icon.png" alt="MedFusion AI Logo" class="h-full w-full object-contain">
+        </div>
+        <div>
+          <div class="font-extrabold text-lg text-white tracking-tight leading-none">MedFusion AI</div>
+          <div class="text-[10px] font-bold text-teal-400 mt-1 uppercase tracking-widest" data-i18n="app_tagline">Health Intelligence</div>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation Links -->
+      <div class="hidden items-center gap-7 lg:flex">
+        <a href="#about" class="text-sm font-semibold text-slate-400 hover:text-white transition-colors" data-i18n="home_nav_about">About</a>
+        <a href="#how-it-works" class="text-sm font-semibold text-slate-400 hover:text-white transition-colors" data-i18n="home_nav_workflow">Workflow</a>
+        <a href="#imaging" class="text-sm font-semibold text-slate-400 hover:text-white transition-colors" data-i18n="home_nav_imaging">Medical Imaging</a>
+        <a href="#labs" class="text-sm font-semibold text-slate-400 hover:text-white transition-colors" data-i18n="home_nav_labs">Lab Reports</a>
+        <a href="#fusion" class="text-sm font-semibold text-slate-400 hover:text-white transition-colors" data-i18n="home_nav_fusion">Fusion Engine</a>
+        <a href="#features" class="text-sm font-semibold text-slate-400 hover:text-white transition-colors" data-i18n="home_nav_features">Features</a>
+        <a href="#safety" class="text-sm font-semibold text-slate-400 hover:text-white transition-colors" data-i18n="home_nav_safety">Safety</a>
+      </div>
+
+      <!-- Desktop Action & Persistent Language Switcher -->
+      <div class="hidden items-center gap-3 sm:flex">
+        <!-- Persistent Language Selector (Always visible) -->
+        <div class="flex items-center gap-1.5 bg-slate-900/90 border border-slate-700/80 rounded-xl px-2.5 py-1.5 shadow-sm">
+          <span class="text-teal-400 text-xs">🌐</span>
+          <select data-lang-selector onchange="if(window.setLanguage) window.setLanguage(this.value);" class="bg-transparent text-slate-200 text-xs font-bold border-none outline-none cursor-pointer pr-1">
+            <option value="en" class="bg-slate-950 text-white">English</option>
+            <option value="hi" class="bg-slate-950 text-white">हिन्दी</option>
+            <option value="mr" class="bg-slate-950 text-white">मराठी</option>
+          </select>
+        </div>
+
+        <!-- Auth Action Buttons Container (Dynamically updated via JS based on auth) -->
+        <div id="nav-auth-container" class="flex items-center gap-3">
+          <!-- Logged Out State (Default) -->
+          <button id="nav-login-trigger" type="button" onclick="if(window.openLoginModal) window.openLoginModal(); else window.location.href='login.html';" class="text-sm font-semibold text-slate-300 hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-slate-800/60 cursor-pointer" data-i18n="home_nav_login">
+            Login
+          </button>
+          <a href="register.html" id="nav-register-btn" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-950 font-bold text-sm shadow-lg shadow-teal-500/20 transition-all hover:shadow-teal-500/30 transform hover:-translate-y-0.5" data-i18n="home_nav_get_started">
+            Get Started
+          </a>
+        </div>
+      </div>
+
+      <!-- Mobile Menu Toggle -->
+      <button id="mobile-menu-btn" class="lg:hidden text-slate-400 hover:text-white p-2 rounded-lg" aria-label="Toggle navigation">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </nav>
+
+    <!-- Mobile Dropdown -->
+    <div id="mobile-menu" class="hidden lg:hidden border-b border-slate-800 bg-[#0b101b] px-6 py-5 space-y-3.5">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <span class="text-xs text-slate-400 font-bold uppercase tracking-wider" data-i18n="nav_language">Language</span>
+        <select data-lang-selector onchange="if(window.setLanguage) window.setLanguage(this.value);" class="bg-slate-900 border border-slate-700 text-slate-200 text-xs font-bold rounded-lg px-2.5 py-1.5 outline-none cursor-pointer">
+          <option value="en" class="bg-slate-950 text-white">English</option>
+          <option value="hi" class="bg-slate-950 text-white">हिन्दी</option>
+          <option value="mr" class="bg-slate-950 text-white">मराठी</option>
+        </select>
+      </div>
+      <a href="#about" class="block text-sm font-semibold text-slate-300 hover:text-white" data-i18n="home_nav_about">About</a>
+      <a href="#how-it-works" class="block text-sm font-semibold text-slate-300 hover:text-white" data-i18n="home_nav_workflow">Workflow</a>
+      <a href="#imaging" class="block text-sm font-semibold text-slate-300 hover:text-white" data-i18n="home_nav_imaging">Medical Imaging</a>
+      <a href="#labs" class="block text-sm font-semibold text-slate-300 hover:text-white" data-i18n="home_nav_labs">Lab Reports</a>
+      <a href="#fusion" class="block text-sm font-semibold text-slate-300 hover:text-white" data-i18n="home_nav_fusion">Fusion Engine</a>
+      <a href="#features" class="block text-sm font-semibold text-slate-300 hover:text-white" data-i18n="home_nav_features">Features</a>
+      <a href="#safety" class="block text-sm font-semibold text-slate-300 hover:text-white" data-i18n="home_nav_safety">Safety</a>
+      <div id="mobile-auth-container" class="pt-4 border-t border-slate-800 flex flex-col gap-2.5">
+        <button id="mobile-login-trigger" type="button" onclick="if(window.openLoginModal) window.openLoginModal(); else window.location.href='login.html';" class="w-full text-center py-2.5 rounded-xl border border-slate-700 bg-slate-900 text-sm font-semibold text-slate-200 cursor-pointer" data-i18n="home_nav_login">
+          Login
+        </button>
+        <a href="register.html" class="w-full text-center py-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 font-bold text-sm" data-i18n="home_nav_free">
+          Get Started Free
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="relative z-10">
+
+    <!-- HERO SECTION -->
+    <section class="relative px-6 pt-12 pb-24 lg:pt-20 lg:pb-32 lg:px-8">
+      <div class="mx-auto max-w-7xl">
+        <div class="grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
+          
+          <!-- Hero Left Content -->
+          <div class="lg:col-span-6 space-y-6">
+            <div class="inline-flex items-center gap-2 rounded-full border border-teal-500/30 bg-teal-500/10 px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-teal-400">
+              <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
+              <span data-i18n="hero_badge">Multimodal Personal Health Intelligence</span>
+            </div>
+
+            <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl leading-[1.12]">
+              <span data-i18n="hero_title_1">Upload Everything.</span><br>
+              <span class="bg-gradient-to-r from-teal-400 via-emerald-300 to-teal-200 bg-clip-text text-transparent" data-i18n="hero_title_2">Get One Health Summary.</span>
+            </h1>
+
+            <p class="text-base sm:text-lg text-slate-400 leading-relaxed max-w-xl" data-i18n="hero_desc">
+              MedFusion AI is a patient-facing health system that unifies medical imaging (X-rays, skin photos) and laboratory blood reports into one understandable, explainable health summary.
+            </p>
+
+            <!-- Dynamic CTA Container -->
+            <div id="hero-cta-container" class="flex flex-wrap items-center gap-4 pt-2">
+              <button id="hero-login-btn" type="button" onclick="if(window.openLoginModal) window.openLoginModal(); else window.location.href='login.html';" class="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-950 font-extrabold text-sm shadow-xl shadow-teal-500/20 transition-all hover:shadow-teal-500/30 transform hover:-translate-y-0.5 cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+                <span data-i18n="hero_login_btn">Login to Dashboard</span>
+              </button>
+              <a href="register.html" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl border border-slate-700 bg-slate-900/70 hover:bg-slate-800 text-white font-semibold text-sm transition-all">
+                <span data-i18n="hero_create_btn">Create Free Account</span>
+                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              </a>
+            </div>
+
+            <!-- Key System Stats -->
+            <div class="grid grid-cols-3 gap-4 pt-6 border-t border-slate-800/80">
+              <div class="space-y-0.5">
+                <div class="text-2xl font-extrabold text-white" data-i18n="stat_3_modalities">3 Modalities</div>
+                <div class="text-xs text-slate-400" data-i18n="stat_3_desc">Chest, Bone & Skin AI</div>
+              </div>
+              <div class="space-y-0.5">
+                <div class="text-2xl font-extrabold text-teal-400" data-i18n="stat_5_labs">5 Lab Panels</div>
+                <div class="text-xs text-slate-400" data-i18n="stat_5_desc">CBC, Sugar, Lipid, KFT, LFT</div>
+              </div>
+              <div class="space-y-0.5">
+                <div class="text-2xl font-extrabold text-emerald-400" data-i18n="stat_1_file">1 Unified File</div>
+                <div class="text-xs text-slate-400" data-i18n="stat_1_desc">Clinical PDF Export</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hero Right: Live Interactive Dashboard Mockup -->
+          <div class="lg:col-span-6">
+            <div class="relative rounded-3xl border border-slate-800 bg-[#0c1322]/90 p-5 sm:p-7 shadow-2xl backdrop-blur-xl glow-teal">
+              
+              <!-- Dashboard Mockup Header -->
+              <div class="flex items-center justify-between pb-5 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                  <div class="h-9 w-9 rounded-xl bg-slate-900 border border-teal-500/30 p-1 flex items-center justify-center shadow-md shrink-0">
+                    <img src="/assets/medfusion_icon.png" alt="Logo" class="h-full w-full object-contain">
+                  </div>
+                  <div>
+                    <div id="mockup-greeting" class="text-xs font-bold text-teal-400 uppercase tracking-widest" data-i18n="mockup_badge">INTERACTIVE PLATFORM DEMO</div>
+                    <div id="mockup-user-title" class="text-sm font-extrabold text-white" data-i18n="mockup_title">Multimodal Health Assessment Preview</div>
+                  </div>
+                </div>
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 text-xs font-semibold text-emerald-400">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                  <span data-i18n="mockup_sample_tag">Sample Demonstration</span>
+                </span>
+              </div>
+
+              <!-- Metrics Stats Row (Anonymous Sample Case) -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 py-4">
+                <div class="rounded-xl bg-slate-900/90 border border-slate-800 p-3">
+                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block" data-i18n="mockup_mode_label">Mode</span>
+                  <span class="text-base font-extrabold text-white" data-i18n="mockup_mode_val">Sample Case</span>
+                </div>
+                <div class="rounded-xl bg-slate-900/90 border border-slate-800 p-3">
+                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block" data-i18n="mockup_data_label">Patient Data</span>
+                  <span class="text-base font-extrabold text-teal-400" data-i18n="mockup_data_val">De-Identified</span>
+                </div>
+                <div class="rounded-xl bg-slate-900/90 border border-slate-800 p-3">
+                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block" data-i18n="mockup_format_label">Report Format</span>
+                  <span class="text-base font-extrabold text-white" data-i18n="mockup_format_val">PDF Ready</span>
+                </div>
+                <div class="rounded-xl bg-amber-500/10 border border-amber-500/30 p-3">
+                  <span class="text-[10px] font-bold text-amber-400 uppercase tracking-wider block" data-i18n="mockup_flag_label">Flagged Items</span>
+                  <span class="text-base font-extrabold text-amber-300" data-i18n="mockup_flag_val">1 Item</span>
+                </div>
+              </div>
+
+              <!-- Module Cards Preview -->
+              <div class="space-y-3 pt-1">
+                <!-- Chest Radiograph Card -->
+                <div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-400 flex items-center justify-center font-bold text-lg">🫁</div>
+                    <div>
+                      <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400" data-i18n="mockup_chest_tag">CHEST X-RAY</div>
+                      <div class="text-sm font-extrabold text-white" data-i18n="mockup_chest_title">Pneumonia Evaluation</div>
+                      <div class="text-xs text-slate-400 mt-0.5" data-i18n="mockup_chest_desc">Subtle density noted in lower right field &middot; ResNet-18</div>
+                    </div>
+                  </div>
+                  <span class="rounded-full border border-amber-500/40 bg-amber-500/15 px-3 py-1 text-xs font-bold text-amber-300" data-i18n="dash_badge_review">Needs Review</span>
+                </div>
+
+                <!-- CBC Blood Panel Card -->
+                <div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-400 flex items-center justify-center font-bold text-lg">🩸</div>
+                    <div>
+                      <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400" data-i18n="mockup_lab_tag">LABORATORY OCR</div>
+                      <div class="text-sm font-extrabold text-white" data-i18n="mockup_lab_title">Complete Blood Count (CBC)</div>
+                      <div class="text-xs text-slate-400 mt-0.5" data-i18n-html="mockup_lab_desc">WBC: <span class="text-rose-400 font-semibold">11.8 High</span> &bull; Hemoglobin: <span class="text-rose-400 font-semibold">11.2 Low</span></div>
+                    </div>
+                  </div>
+                  <span class="rounded-full border border-slate-700 bg-slate-800/60 px-3 py-1 text-xs font-bold text-slate-300" data-i18n="mockup_lab_status">Evaluated</span>
+                </div>
+
+                <!-- Multimodal Fusion Engine Box -->
+                <div class="rounded-2xl border border-teal-500/30 bg-gradient-to-br from-teal-950/40 via-slate-900/80 to-slate-900 p-4">
+                  <div class="flex items-center justify-between mb-1.5">
+                    <span class="text-[11px] font-bold text-teal-400 uppercase tracking-wider flex items-center gap-1.5">
+                      <span class="h-2 w-2 rounded-full bg-teal-400"></span>
+                      <span data-i18n="mockup_fusion_title">Multimodal Health Fusion</span>
+                    </span>
+                    <span class="text-[11px] font-semibold text-slate-400" data-i18n="mockup_fusion_badge">Correlated Finding</span>
+                  </div>
+                  <p class="text-xs text-slate-300 leading-relaxed" data-i18n="mockup_fusion_desc">
+                    Correlated pulmonary shadow with elevated WBC. Physician review recommended.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Direct Action Link in Mockup -->
+              <div class="mt-4 pt-3 border-t border-slate-800 flex justify-between items-center text-xs">
+                <span class="text-slate-400" data-i18n="mockup_scope">Personal Patient Scope &middot; Single Port</span>
+                <a href="dashboard.html" class="text-teal-400 font-bold hover:underline flex items-center gap-1" data-i18n="mockup_open_dash">
+                  Open Full Dashboard &rarr;
+                </a>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 1: ABOUT MEDFUSION AI & WHAT MAKES IT DIFFERENT -->
+    <section id="about" class="px-6 py-20 border-t border-slate-800/80 bg-[#070b13]">
+      <div class="mx-auto max-w-7xl">
+        <div class="max-w-3xl space-y-3">
+          <p class="text-xs font-bold uppercase tracking-widest text-teal-400" data-i18n="about_eyebrow">ABOUT MEDFUSION AI</p>
+          <h2 class="text-3xl font-extrabold text-white sm:text-4xl tracking-tight" data-i18n="about_title">Not 8 Separate Tools. One Unified Multimodal Fusion Engine.</h2>
+          <p class="text-sm sm:text-base text-slate-400 leading-relaxed" data-i18n-html="about_desc">
+            Healthcare information is traditionally fragmented across isolated documents — an X-ray here, a blood report there. MedFusion AI solves this with <strong>Multimodal Health Intelligence</strong>.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+          <div class="rounded-2xl border border-slate-800 bg-[#0c1322] p-7 space-y-3">
+            <div class="h-10 w-10 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center font-bold text-lg">🎯</div>
+            <h3 class="text-lg font-bold text-white" data-i18n="about_card1_title">Single Individual Scope</h3>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="about_card1_desc">
+              Designed specifically for the individual patient. Upload your own health information, review findings, and download reports without the clutter of complex hospital management systems.
+            </p>
+          </div>
+
+          <div class="rounded-2xl border border-slate-800 bg-[#0c1322] p-7 space-y-3">
+            <div class="h-10 w-10 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center font-bold text-lg">🧬</div>
+            <h3 class="text-lg font-bold text-white" data-i18n="about_card2_title">Cross-Report Correlation</h3>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="about_card2_desc">
+              Findings from medical images and laboratory blood panels are linked using clinically verified templates and rule engines — never inventing unsupported medical conclusions.
+            </p>
+          </div>
+
+          <div class="rounded-2xl border border-slate-800 bg-[#0c1322] p-7 space-y-3">
+            <div class="h-10 w-10 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center font-bold text-lg">⚡</div>
+            <h3 class="text-lg font-bold text-white" data-i18n="about_card3_title">Dynamic Card Display</h3>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="about_card3_desc">
+              If you upload only a Chest X-ray and a CBC report, the system displays only those relevant cards. No empty cards or distractions for modules you didn't upload.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: COMPLETE WORKFLOW (5 PHASES) -->
+    <section id="how-it-works" class="px-6 py-20 border-t border-slate-800/80">
+      <div class="mx-auto max-w-7xl">
+        <div class="text-center max-w-2xl mx-auto space-y-3">
+          <p class="text-xs font-bold uppercase tracking-widest text-teal-400" data-i18n="wf_eyebrow">THE PATIENT JOURNEY</p>
+          <h2 class="text-3xl font-extrabold text-white sm:text-4xl tracking-tight" data-i18n="wf_title">How MedFusion AI Works</h2>
+          <p class="text-sm text-slate-400" data-i18n="wf_sub">Upload &rarr; Analyze &rarr; Understand &rarr; Fuse &rarr; Combined Summary &rarr; Save Report.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-5 mt-14">
+          <div class="rounded-2xl border border-slate-800 bg-[#0c1322] p-5 space-y-3 relative group hover:border-teal-500/40 transition-colors">
+            <div class="text-2xl font-extrabold text-slate-700 group-hover:text-teal-400 transition-colors">01</div>
+            <h3 class="text-base font-bold text-white" data-i18n="wf_step1_title">Upload Everything</h3>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="wf_step1_desc">
+              Drop chest/bone X-rays, skin photos, or PDF/image blood reports in a unified upload workflow.
+            </p>
+          </div>
+
+          <div class="rounded-2xl border border-slate-800 bg-[#0c1322] p-5 space-y-3 relative group hover:border-teal-500/40 transition-colors">
+            <div class="text-2xl font-extrabold text-slate-700 group-hover:text-teal-400 transition-colors">02</div>
+            <h3 class="text-base font-bold text-white" data-i18n="wf_step2_title">AI & OCR Analysis</h3>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="wf_step2_desc">
+              Deep CNNs classify medical imaging; EasyOCR extracts machine-readable numerical lab parameters.
+            </p>
+          </div>
+
+          <div class="rounded-2xl border border-slate-800 bg-[#0c1322] p-5 space-y-3 relative group hover:border-teal-500/40 transition-colors">
+            <div class="text-2xl font-extrabold text-slate-700 group-hover:text-teal-400 transition-colors">03</div>
+            <h3 class="text-base font-bold text-white" data-i18n="wf_step3_title">Rule Engine Eval</h3>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="wf_step3_desc">
+              Blood metrics are compared to configured clinical reference ranges and tagged: Low, Normal, or Elevated.
+            </p>
+          </div>
+
+          <div class="rounded-2xl border border-slate-800 bg-[#0c1322] p-5 space-y-3 relative group hover:border-teal-500/40 transition-colors">
+            <div class="text-2xl font-extrabold text-slate-700 group-hover:text-teal-400 transition-colors">04</div>
+            <h3 class="text-base font-bold text-white" data-i18n="wf_step4_title">Multimodal Fusion</h3>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="wf_step4_desc">
+              The Fusion Engine cross-correlates multi-source abnormalities into one synthesized health status.
+            </p>
+          </div>
+
+          <div class="rounded-2xl border border-slate-800 bg-[#0c1322] p-5 space-y-3 relative group hover:border-teal-500/40 transition-colors">
+            <div class="text-2xl font-extrabold text-slate-700 group-hover:text-teal-400 transition-colors">05</div>
+            <h3 class="text-base font-bold text-white" data-i18n="wf_step5_title">Export & Timeline</h3>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="wf_step5_desc">
+              Review your health summary, download a formatted PDF, and track historical milestones on your timeline.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: THE 3 MEDICAL IMAGE MODULES -->
+    <section id="imaging" class="px-6 py-20 border-t border-slate-800/80 bg-[#070b13]">
+      <div class="mx-auto max-w-7xl">
+        <div class="max-w-2xl space-y-3">
+          <p class="text-xs font-bold uppercase tracking-widest text-teal-400" data-i18n="img_eyebrow">DEEP LEARNING VISION</p>
+          <h2 class="text-3xl font-extrabold text-white sm:text-4xl tracking-tight" data-i18n="img_title">3 Medical Imaging Modules</h2>
+          <p class="text-sm text-slate-400" data-i18n="img_desc">Transfer learning models trained on benchmark medical imaging datasets.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+          <!-- Chest X-Ray -->
+          <div class="rounded-2xl border border-slate-800 bg-[#0c1322] p-6 space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="h-11 w-11 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-400 flex items-center justify-center text-2xl">🫁</div>
+              <span class="text-xs font-bold text-teal-400 uppercase tracking-widest" data-i18n="img_card1_tag">ResNet-18</span>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-white" data-i18n="img_card1_title">Chest X-ray</h3>
+              <p class="text-xs text-slate-400 mt-1 leading-relaxed" data-i18n="img_card1_desc">
+                Evaluates pulmonary radiographs for pneumonia indicators versus clear normal findings.
+              </p>
+            </div>
+            <div class="pt-3 border-t border-slate-800/80 text-xs text-slate-400 space-y-1">
+              <div data-i18n="img_card1_meta1"><strong class="text-slate-300">Dataset:</strong> ChestX-ray14</div>
+              <div data-i18n="img_card1_meta2"><strong class="text-slate-300">Target:</strong> Normal vs Pneumonia detection</div>
+              <div data-i18n="img_card1_meta3"><strong class="text-slate-300">Output:</strong> Probability score & parenchymal status</div>
+            </div>
+          </div>
+
+          <!-- Bone X-Ray -->
+          <div class="rounded-2xl border border-slate-800 bg-[#0c1322] p-6 space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="h-11 w-11 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-400 flex items-center justify-center text-2xl">🦴</div>
+              <span class="text-xs font-bold text-teal-400 uppercase tracking-widest" data-i18n="img_card2_tag">EfficientNet-B0</span>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-white" data-i18n="img_card2_title">Bone X-ray</h3>
+              <p class="text-xs text-slate-400 mt-1 leading-relaxed" data-i18n="img_card2_desc">
+                Screens musculoskeletal radiographs for fractures and structural bone cortical continuity.
+              </p>
+            </div>
+            <div class="pt-3 border-t border-slate-800/80 text-xs text-slate-400 space-y-1">
+              <div data-i18n="img_card2_meta1"><strong class="text-slate-300">Dataset:</strong> MURA (Musculoskeletal Radiographs)</div>
+              <div data-i18n="img_card2_meta2"><strong class="text-slate-300">Regions:</strong> Hand, wrist, elbow, forearm, shoulder</div>
+              <div data-i18n="img_card2_meta3"><strong class="text-slate-300">Output:</strong> Fractured vs Not Fractured screening</div>
+            </div>
+          </div>
+
+          <!-- Skin / Lesion -->
+          <div class="rounded-2xl border border-slate-800 bg-[#0c1322] p-6 space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="h-11 w-11 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-400 flex items-center justify-center text-2xl">🔬</div>
+              <span class="text-xs font-bold text-teal-400 uppercase tracking-widest" data-i18n="img_card3_tag">EfficientNet-B0</span>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-white" data-i18n="img_card3_title">Skin / Lesion Image</h3>
+              <p class="text-xs text-slate-400 mt-1 leading-relaxed" data-i18n="img_card3_desc">
+                Analyzes skin photographs and dermoscopy for supported lesion classification categories.
+              </p>
+            </div>
+            <div class="pt-3 border-t border-slate-800/80 text-xs text-slate-400 space-y-1">
+              <div data-i18n="img_card3_meta1"><strong class="text-slate-300">Dataset:</strong> HAM10000 / ISIC</div>
+              <div data-i18n="img_card3_meta2"><strong class="text-slate-300">Classes:</strong> Melanocytic nevi, benign vs risk screening</div>
+              <div data-i18n="img_card3_meta3"><strong class="text-slate-300">Output:</strong> Classification probabilities & advice</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: THE 5 LABORATORY REPORT MODULES -->
+    <section id="labs" class="px-6 py-20 border-t border-slate-800/80">
+      <div class="mx-auto max-w-7xl">
+        <div class="max-w-3xl space-y-3">
+          <p class="text-xs font-bold uppercase tracking-widest text-teal-400" data-i18n="labs_eyebrow">OCR & RULE ENGINE</p>
+          <h2 class="text-3xl font-extrabold text-white sm:text-4xl tracking-tight" data-i18n="labs_title">5 Laboratory Report Panels</h2>
+          <p class="text-sm text-slate-400 leading-relaxed" data-i18n-html="labs_desc">
+            A specialized CNN is not required for every lab type. Instead, MedFusion AI uses an <strong>OCR &rarr; Type Detection &rarr; Parameter Extraction &rarr; Rule Engine</strong> architecture with clinical reference ranges.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 mt-12">
+          <!-- CBC -->
+          <div class="rounded-2xl border border-slate-800 bg-[#0c1322] p-5 space-y-2.5">
+            <div class="text-2xl">🩸</div>
+            <h3 class="text-base font-bold text-white" data-i18n="labs_card1_title">CBC Panel</h3>
+            <p class="text-[11px] text-teal-400 font-semibold uppercase tracking-wider" data-i18n="labs_card1_sub">Complete Blood Count</p>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="labs_card1_desc">
+              Extracts Hemoglobin, WBC, RBC, Platelets, and Hematocrit. Flags anemia or infection.
+            </p>
+          </div>
+
+          <!-- Diabetes -->
+          <div class="rounded-2xl border border-slate-800 bg-[#0c1322] p-5 space-y-2.5">
+            <div class="text-2xl">🍬</div>
+            <h3 class="text-base font-bold text-white" data-i18n="labs_card2_title">Diabetes Panel</h3>
+            <p class="text-[11px] text-teal-400 font-semibold uppercase tracking-wider" data-i18n="labs_card2_sub">Glycemic Profile</p>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="labs_card2_desc">
+              Evaluates Fasting Blood Sugar (FBS), Postprandial Blood Sugar (PPBS), and HbA1c values.
+            </p>
+          </div>
+
+          <!-- Lipid -->
+          <div class="rounded-2xl border border-slate-800 bg-[#0c1322] p-5 space-y-2.5">
+            <div class="text-2xl">🫀</div>
+            <h3 class="text-base font-bold text-white" data-i18n="labs_card3_title">Lipid Profile</h3>
+            <p class="text-[11px] text-teal-400 font-semibold uppercase tracking-wider" data-i18n="labs_card3_sub">Cardiovascular Risk</p>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="labs_card3_desc">
+              Parses Total Cholesterol, HDL (good), LDL (bad), and Triglycerides against thresholds.
+            </p>
+          </div>
+
+          <!-- KFT -->
+          <div class="rounded-2xl border border-slate-800 bg-[#0c1322] p-5 space-y-2.5">
+            <div class="text-2xl">💧</div>
+            <h3 class="text-base font-bold text-white" data-i18n="labs_card4_title">Kidney (KFT)</h3>
+            <p class="text-[11px] text-teal-400 font-semibold uppercase tracking-wider" data-i18n="labs_card4_sub">Renal Function</p>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="labs_card4_desc">
+              Checks Serum Creatinine, Blood Urea, and eGFR to evaluate kidney filtration health.
+            </p>
+          </div>
+
+          <!-- LFT -->
+          <div class="rounded-2xl border border-slate-800 bg-[#0c1322] p-5 space-y-2.5">
+            <div class="text-2xl">🧪</div>
+            <h3 class="text-base font-bold text-white" data-i18n="labs_card5_title">Liver (LFT)</h3>
+            <p class="text-[11px] text-teal-400 font-semibold uppercase tracking-wider" data-i18n="labs_card5_sub">Hepatic Function</p>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="labs_card5_desc">
+              Extracts ALT (SGPT), AST (SGOT), Total Bilirubin, and Albumin for hepatic status.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: MULTIMODAL FUSION ENGINE -->
+    <section id="fusion" class="px-6 py-20 border-t border-slate-800/80 bg-[#070b13]">
+      <div class="mx-auto max-w-7xl">
+        <div class="grid items-center gap-10 lg:grid-cols-12">
+          
+          <div class="lg:col-span-6 space-y-4">
+            <p class="text-xs font-bold uppercase tracking-widest text-teal-400" data-i18n="fus_eyebrow">THE PRIMARY USP</p>
+            <h2 class="text-3xl font-extrabold text-white sm:text-4xl tracking-tight" data-i18n="fus_title">How the Fusion Engine Works</h2>
+            <p class="text-sm sm:text-base text-slate-400 leading-relaxed" data-i18n="fus_desc">
+              When multiple health files are submitted, MedFusion AI feeds each verified finding into our Multimodal Fusion Engine.
+            </p>
+            
+            <div class="space-y-3 pt-2">
+              <div class="flex items-start gap-3 rounded-xl border border-slate-800 bg-[#0c1322] p-3.5">
+                <span class="text-teal-400 font-bold text-sm">✓</span>
+                <div>
+                  <h4 class="text-xs font-bold text-white uppercase tracking-wider" data-i18n="fus_p1_title">Overall Findings</h4>
+                  <p class="text-xs text-slate-400 mt-0.5" data-i18n="fus_p1_desc">Synthesizes active imaging probabilities and blood statuses into one score.</p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3 rounded-xl border border-slate-800 bg-[#0c1322] p-3.5">
+                <span class="text-amber-400 font-bold text-sm">!</span>
+                <div>
+                  <h4 class="text-xs font-bold text-white uppercase tracking-wider" data-i18n="fus_p2_title">Important Abnormalities</h4>
+                  <p class="text-xs text-slate-400 mt-0.5" data-i18n="fus_p2_desc">Surfaces out-of-range lab metrics and abnormal imaging flags requiring attention.</p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3 rounded-xl border border-slate-800 bg-[#0c1322] p-3.5">
+                <span class="text-teal-400 font-bold text-sm">🔗</span>
+                <div>
+                  <h4 class="text-xs font-bold text-white uppercase tracking-wider" data-i18n="fus_p3_title">Cross-Report Observations</h4>
+                  <p class="text-xs text-slate-400 mt-0.5" data-i18n="fus_p3_desc">Example: Correlating high WBC counts with chest radiograph pneumonia indications.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-6">
+            <div class="rounded-3xl border border-teal-500/30 bg-[#0c1322] p-6 sm:p-8 space-y-5 glow-teal">
+              <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                <span class="text-xs font-bold uppercase tracking-wider text-teal-400" data-i18n="fus_arch_title">Fusion Architecture</span>
+                <span class="text-xs text-slate-400 font-mono">Multimodal v1.0</span>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3 text-xs">
+                <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                  <div class="text-slate-400" data-i18n="fus_box1_lbl">Available Inputs</div>
+                  <div class="text-white font-bold mt-1" data-i18n="fus_box1_val">Chest X-ray + CBC</div>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                  <div class="text-slate-400" data-i18n="fus_box2_lbl">Computed Status</div>
+                  <div class="text-amber-300 font-bold mt-1" data-i18n="fus_box2_val">Moderate Attention</div>
+                </div>
+              </div>
+
+              <div class="rounded-2xl border border-slate-800 bg-slate-900/80 p-4 space-y-2 text-xs">
+                <div class="font-bold text-white" data-i18n="fus_box3_title">AI-Assisted Health Summary Output</div>
+                <p class="text-slate-300 leading-relaxed" data-i18n="fus_box3_desc">
+                  "Multiple findings were identified across uploaded inputs. Subtle density in the right lung field corresponds with elevated leukocytosis (WBC 11.8 x10³/µL). Recommend consulting your physician for evaluation."
+                </p>
+              </div>
+
+              <div class="text-[11px] text-slate-400 italic" data-i18n="fus_note">
+                * Note: If an unneeded module was not uploaded, no blank cards will be shown on the results screen.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 6: STANDOUT FEATURES -->
+    <section id="features" class="px-6 py-20 border-t border-slate-800/80">
+      <div class="mx-auto max-w-7xl">
+        <div class="text-center max-w-2xl mx-auto space-y-3">
+          <p class="text-xs font-bold uppercase tracking-widest text-teal-400" data-i18n="feat_eyebrow">FIVE STANDOUT CAPABILITIES</p>
+          <h2 class="text-3xl font-extrabold text-white sm:text-4xl tracking-tight" data-i18n="feat_title">Built for Real Patient Utility</h2>
+          <p class="text-sm text-slate-400" data-i18n="feat_desc">Carefully engineered features defined in the project specification.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-5 mt-14">
+          <div class="rounded-2xl border border-slate-800 bg-[#0c1322] p-5 space-y-2.5">
+            <div class="h-9 w-9 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center font-bold">1</div>
+            <h3 class="text-sm font-bold text-white" data-i18n="feat_f1_title">Multimodal Summary</h3>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="feat_f1_desc">Brings multiple medical images and blood panels together into one clear summary.</p>
+          </div>
+
+          <div class="rounded-2xl border border-slate-800 bg-[#0c1322] p-5 space-y-2.5">
+            <div class="h-9 w-9 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center font-bold">2</div>
+            <h3 class="text-sm font-bold text-white" data-i18n="feat_f2_title">Explainable Results</h3>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="feat_f2_desc">Plain-language explanations detailing what was flagged and why it exceeds normal limits.</p>
+          </div>
+
+          <div class="rounded-2xl border border-slate-800 bg-[#0c1322] p-5 space-y-2.5">
+            <div class="h-9 w-9 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center font-bold">3</div>
+            <h3 class="text-sm font-bold text-white" data-i18n="feat_f3_title">Health Timeline</h3>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="feat_f3_desc">Review historical analyses and monitor blood trends and imaging milestones over time.</p>
+          </div>
+
+          <div class="rounded-2xl border border-slate-800 bg-[#0c1322] p-5 space-y-2.5">
+            <div class="h-9 w-9 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center font-bold">4</div>
+            <h3 class="text-sm font-bold text-white" data-i18n="feat_f4_title">Next-Step Guidance</h3>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="feat_f4_desc">General educational context to empower informed follow-up conversations with doctors.</p>
+          </div>
+
+          <div class="rounded-2xl border border-slate-800 bg-[#0c1322] p-5 space-y-2.5">
+            <div class="h-9 w-9 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center font-bold">5</div>
+            <h3 class="text-sm font-bold text-white" data-i18n="feat_f5_title">Structured PDF</h3>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="feat_f5_desc">Instantly generate a structured, print-ready PDF containing all findings and dates.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 7: CLINICAL SAFETY & WHAT MEDFUSION IS NOT -->
+    <section id="safety" class="px-6 py-16 border-t border-slate-800/80 bg-[#070b13]">
+      <div class="mx-auto max-w-4xl space-y-8">
+        
+        <div class="rounded-3xl border border-slate-800 bg-[#0c1322] p-7 md:p-9 flex flex-col sm:flex-row items-start sm:items-center gap-6">
+          <div class="h-14 w-14 rounded-2xl bg-teal-500/10 border border-teal-500/20 text-teal-400 flex-shrink-0 flex items-center justify-center text-3xl font-bold">🛡️</div>
+          <div class="space-y-1.5">
+            <h3 class="text-lg font-bold text-white" data-i18n="safety_title">Strict Safety & Language Compliance</h3>
+            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed" data-i18n-html="safety_desc">
+              MedFusion AI strictly utilizes non-definitive language such as <em>"AI-assisted finding"</em>, <em>"outside configured reference range"</em>, and <em>"requires attention"</em>. It does not provide definitive medical diagnoses.
+            </p>
+          </div>
+        </div>
+
+        <div class="rounded-3xl border border-slate-800/80 bg-[#090d16] p-7 space-y-4">
+          <h4 class="text-xs font-bold uppercase tracking-widest text-slate-400" data-i18n="safety_box_title">WHAT MEDFUSION AI IS NOT (PER SPECIFICATION)</h4>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs text-slate-300">
+            <div class="flex items-center gap-2"><span class="text-rose-400 font-bold">✕</span> <span data-i18n="safety_not_doctor">Not a doctor replacement</span></div>
+            <div class="flex items-center gap-2"><span class="text-rose-400 font-bold">✕</span> <span data-i18n="safety_not_diagnosis">Not a definitive diagnosis</span></div>
+            <div class="flex items-center gap-2"><span class="text-rose-400 font-bold">✕</span> <span data-i18n="safety_not_prescription">Not a prescription system</span></div>
+            <div class="flex items-center gap-2"><span class="text-rose-400 font-bold">✕</span> <span data-i18n="safety_not_emergency">Not emergency care</span></div>
+            <div class="flex items-center gap-2"><span class="text-rose-400 font-bold">✕</span> <span data-i18n="safety_not_hospital">Not hospital software</span></div>
+            <div class="flex items-center gap-2"><span class="text-rose-400 font-bold">✕</span> <span data-i18n="safety_not_portal">Not a doctor portal</span></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CALL TO ACTION SECTION -->
+    <section class="px-6 py-20 border-t border-slate-800/80 bg-gradient-to-b from-[#090d16] to-[#0c1322]">
+      <div class="mx-auto max-w-4xl text-center space-y-6">
+        <h2 class="text-3xl font-extrabold text-white sm:text-4xl tracking-tight" data-i18n="cta_title">Ready to Get Your Multimodal Summary?</h2>
+        <p class="text-sm sm:text-base text-slate-400 max-w-xl mx-auto" data-i18n="cta_desc">
+          Sign in or create your account to upload medical images and laboratory reports into your private health intelligence workspace.
+        </p>
+        <div id="cta-action-container" class="pt-2 flex flex-wrap justify-center gap-4">
+          <button id="cta-login-btn" type="button" onclick="if(window.openLoginModal) window.openLoginModal(); else window.location.href='login.html';" class="inline-flex items-center gap-2.5 px-7 py-4 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-950 font-extrabold text-sm shadow-xl shadow-teal-500/25 transition-all transform hover:-translate-y-0.5 cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+            <span data-i18n="hero_login_btn">Login to Dashboard</span>
+          </button>
+          <a href="register.html" class="inline-flex items-center gap-2 px-7 py-4 rounded-xl border border-slate-700 bg-slate-900/80 hover:bg-slate-800 text-white font-semibold text-sm transition-all">
+            <span data-i18n="cta_create_acc">Create Free Account &rarr;</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-slate-800/80 bg-[#070b13] px-6 py-10">
+    <div class="mx-auto max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+      <div class="flex items-center gap-2.5">
+        <div class="h-7 w-7 rounded-lg bg-slate-900 border border-teal-500/30 p-0.5 flex items-center justify-center shrink-0">
+          <img src="/assets/medfusion_icon.png" alt="MedFusion AI" class="h-full w-full object-contain">
+        </div>
+        <span class="font-bold text-slate-300">MedFusion AI</span>
+        <span>&middot;</span>
+        <span data-i18n="footer_summary">Single-Port Architecture &middot; SQLite &middot; Multimodal Vision + OCR</span>
+      </div>
+      <div data-i18n="footer_rights">&copy; 2026 MedFusion AI. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <!-- ==================== QUICK LOGIN MODAL ==================== -->
+  <div id="login-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md hidden">
+    <div class="relative w-full max-w-md rounded-3xl border border-slate-800 bg-[#0c1322] p-7 shadow-2xl space-y-6 glow-teal">
+      
+      <!-- Close Button -->
+      <button id="close-modal-btn" type="button" class="absolute top-5 right-5 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800" aria-label="Close modal">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <!-- Modal Header -->
+      <div class="flex items-center gap-3">
+        <div class="h-11 w-11 rounded-xl bg-slate-900 border border-teal-500/30 p-1 flex items-center justify-center shadow-lg shrink-0">
+          <img src="/assets/medfusion_icon.png" alt="Logo" class="h-full w-full object-contain">
+        </div>
+        <div>
+          <div class="font-extrabold text-lg text-white" data-i18n="modal_login_title">Login to MedFusion AI</div>
+          <div class="text-[10px] font-bold text-teal-400 uppercase tracking-widest" data-i18n="modal_login_sub">Access Your Health Workspace</div>
+        </div>
+      </div>
+
+      <!-- Quick Demo Account 1-Click Button -->
+      <div class="rounded-xl border border-teal-500/30 bg-teal-500/10 p-3 flex items-center justify-between">
+        <div class="text-xs">
+          <div class="font-bold text-teal-300" data-i18n="modal_demo_title">Quick Demo Account</div>
+          <div class="text-slate-400 text-[11px]">test@medfusion.ai / Password123</div>
+        </div>
+        <button id="fill-demo-btn" type="button" class="px-3 py-1.5 rounded-lg bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs transition-colors" data-i18n="modal_use_demo">
+          Use Demo
+        </button>
+      </div>
+
+      <!-- Error Toast Alert -->
+      <div id="modal-error-toast" class="hidden rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300"></div>
+
+      <!-- Login Form -->
+      <form id="modal-login-form" class="space-y-4">
+        <div>
+          <label for="modal-email" class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5" data-i18n="modal_email_lbl">Email Address</label>
+          <input id="modal-email" type="email" required autocomplete="email" class="w-full rounded-xl border border-slate-700 bg-slate-900/90 px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-teal-400 focus:outline-none focus:ring-1 focus:ring-teal-400" placeholder="you@example.com">
+        </div>
+
+        <div>
+          <label for="modal-password" class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5" data-i18n="modal_pwd_lbl">Password</label>
+          <input id="modal-password" type="password" required autocomplete="current-password" class="w-full rounded-xl border border-slate-700 bg-slate-900/90 px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-teal-400 focus:outline-none focus:ring-1 focus:ring-teal-400" placeholder="Enter your password">
+        </div>
+
+        <button id="modal-submit-btn" type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-950 font-extrabold text-sm shadow-lg shadow-teal-500/20 transition-all">
+          <span data-i18n="modal_signin_btn">Sign In & Open Dashboard</span>
+        </button>
+      </form>
+
+      <!-- Modal Footer -->
+      <div class="text-center text-xs text-slate-400 pt-2 border-t border-slate-800">
+        <span data-i18n="modal_new_patient">New patient?</span> <a href="register.html" class="font-bold text-teal-400 hover:underline" data-i18n="modal_create_acc">Create an account</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SCRIPT FOR DYNAMIC STATE & MODAL HANDLING -->
+  <script type="module">
+    import { apiRequest } from './js/api.js';
+    import { getCurrentLang, setLanguage, applyTranslations } from './js/i18n.js';
+
+    // State Variables
+    const token = localStorage.getItem('medfusion_token');
+    const rawUser = localStorage.getItem('medfusion_user');
+    let user = null;
+    try { if (rawUser) user = JSON.parse(rawUser); } catch(e){}
+
+    // Modal Elements
+    const modal = document.getElementById('login-modal');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const fillDemoBtn = document.getElementById('fill-demo-btn');
+    const modalForm = document.getElementById('modal-login-form');
+    const modalEmail = document.getElementById('modal-email');
+    const modalPassword = document.getElementById('modal-password');
+    const modalSubmitBtn = document.getElementById('modal-submit-btn');
+    const errorToast = document.getElementById('modal-error-toast');
+
+    function openModal() {
+      // If already logged in, go straight to dashboard
+      if (localStorage.getItem('medfusion_token')) {
+        window.location.href = 'dashboard.html';
+        return;
+      }
+      modal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+      modal.classList.add('hidden');
+      if (errorToast) errorToast.classList.add('hidden');
+    }
+
+    // Expose globally for instant inline triggering
+    window.openLoginModal = openModal;
+    window.closeLoginModal = closeModal;
+
+    // Attach open modal triggers
+    document.querySelectorAll('#nav-login-trigger, #mobile-login-trigger, #hero-login-btn, #cta-login-btn').forEach(btn => {
+      btn?.addEventListener('click', (e) => {
+        if (localStorage.getItem('medfusion_token')) {
+          window.location.href = 'dashboard.html';
+        } else {
+          openModal();
+        }
+      });
+    });
+
+    closeModalBtn?.addEventListener('click', closeModal);
+    modal?.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    // Fill demo credentials
+    fillDemoBtn?.addEventListener('click', () => {
+      modalEmail.value = 'test@medfusion.ai';
+      modalPassword.value = 'Password123';
+    });
+
+    // Modal submit handler
+    modalForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = modalEmail.value.trim();
+      const password = modalPassword.value;
+      if (!email || !password) return;
+
+      modalSubmitBtn.disabled = true;
+      modalSubmitBtn.textContent = 'Signing in...';
+      if (errorToast) errorToast.classList.add('hidden');
+
+      try {
+        let token, userObj;
+        try {
+          const data = await apiRequest('/auth/login', {
+            method: 'POST',
+            body: JSON.stringify({ email, password })
+          });
+          token = data.access_token || data.token;
+          userObj = data.user || { email };
+        } catch (apiErr) {
+          // Direct fetch fallback
+          const resp = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+          const data = await resp.json();
+          if (!resp.ok) throw new Error(data?.detail || data?.message || 'Login failed');
+          token = data.access_token || data.token;
+          userObj = data.user || { email };
+        }
+
+        if (!token) throw new Error('No access token returned');
+        localStorage.setItem('medfusion_token', token);
+        localStorage.setItem('medfusion_user', JSON.stringify(userObj));
+
+        // Redirect straight to dashboard
+        window.location.href = 'dashboard.html';
+      } catch (err) {
+        if (errorToast) {
+          errorToast.textContent = err.message || 'Login failed. Please check your credentials.';
+          errorToast.classList.remove('hidden');
+        }
+      } finally {
+        modalSubmitBtn.disabled = false;
+        modalSubmitBtn.textContent = 'Sign In & Open Dashboard';
+      }
+    });
+
+    // Mobile Hamburger
+    const mobileBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileBtn?.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // If User is already Logged In: Update UI to show Dashboard everywhere
+    // If User is already Logged In: Update UI to show Dashboard everywhere
+    if (token) {
+      const displayName = user?.name || user?.email?.split('@')[0] || 'Patient';
+
+      // Update Navigation
+      const navContainer = document.getElementById('nav-auth-container');
+      if (navContainer) {
+        navContainer.innerHTML = `
+          <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300">
+            <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+            <span>Hi, <strong>${escapeHtml(displayName)}</strong></span>
+          </div>
+          <a href="dashboard.html" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 font-bold text-xs shadow-md shadow-teal-500/20 hover:from-teal-400 hover:to-emerald-300 transition-all">
+            <span data-i18n="nav_dashboard">Dashboard</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </a>
+          <button id="signout-btn" type="button" class="text-xs text-slate-400 hover:text-rose-400 font-semibold px-2 py-1 transition-colors" data-i18n="sign_out">
+            Sign Out
+          </button>
+        `;
+      }
+
+      // Update Mobile Nav
+      const mobileContainer = document.getElementById('mobile-auth-container');
+      if (mobileContainer) {
+        mobileContainer.innerHTML = `
+          <a href="dashboard.html" class="w-full text-center py-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 font-bold text-sm">
+            <span data-i18n="hero_dashboard_btn">Open Dashboard</span> (${escapeHtml(displayName)})
+          </a>
+          <button id="mobile-signout-btn" type="button" class="w-full text-center py-2 text-xs text-rose-400 font-semibold" data-i18n="sign_out">
+            Sign Out
+          </button>
+        `;
+      }
+
+      // Update Hero CTA
+      const heroCtaContainer = document.getElementById('hero-cta-container');
+      if (heroCtaContainer) {
+        heroCtaContainer.innerHTML = `
+          <a href="dashboard.html" class="inline-flex items-center gap-2.5 px-7 py-4 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-950 font-extrabold text-sm shadow-xl shadow-teal-500/25 transition-all transform hover:-translate-y-0.5">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+            <span data-i18n="hero_dashboard_btn">Open My Dashboard</span> (${escapeHtml(displayName)}) &rarr;
+          </a>
+          <a href="new-analysis.html" class="inline-flex items-center gap-2 px-6 py-4 rounded-xl border border-slate-700 bg-slate-900/80 hover:bg-slate-800 text-white font-semibold text-sm transition-all">
+            <span data-i18n="hero_start_new">+ Start New Analysis</span>
+          </a>
+        `;
+      }
+
+      // Update Mockup Greeting
+      const mockupTitle = document.getElementById('mockup-user-title');
+      if (mockupTitle) {
+        mockupTitle.textContent = `Welcome back, ${displayName}`;
+      }
+
+      // Update Bottom CTA
+      const ctaContainer = document.getElementById('cta-action-container');
+      if (ctaContainer) {
+        ctaContainer.innerHTML = `
+          <a href="dashboard.html" class="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-950 font-extrabold text-sm shadow-xl shadow-teal-500/25 transition-all transform hover:-translate-y-0.5">
+            <span data-i18n="hero_dashboard_btn">Go to Your Dashboard</span> &rarr;
+          </a>
+        `;
+      }
+
+      // Sign Out Event Listeners
+      document.querySelectorAll('#signout-btn, #mobile-signout-btn').forEach(btn => {
+        btn?.addEventListener('click', () => {
+          localStorage.removeItem('medfusion_token');
+          localStorage.removeItem('medfusion_user');
+          window.location.reload();
+        });
+      });
+    }
+
+    // Apply translations on load and re-apply on language changes
+    applyTranslations();
+    window.addEventListener('medfusion_lang_changed', () => {
+      applyTranslations();
+    });
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[m]));
+    }
+  </script>
+</body>
+</html>

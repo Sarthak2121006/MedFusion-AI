@@ -1,0 +1,19 @@
+services:
+  medfusion-ai:
+    build: .
+    container_name: medfusion-ai
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOST=0.0.0.0
+      - JWT_SECRET=change-this-to-a-secure-random-secret-in-production
+    volumes:
+      - medfusion-data:/app/uploads
+      - medfusion-db:/app/data
+
+volumes:
+  medfusion-data:
+  medfusion-db:

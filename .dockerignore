@@ -1,0 +1,12 @@
+node_modules
+.git
+.vscode
+.env
+medfusion.db
+medfusion.db-journal
+uploads/*
+!uploads/.gitkeep
+scratch
+MedFusion-AI/MedFusion-AI/.venv
+*.pyc
+__pycache__
