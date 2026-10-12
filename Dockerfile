@@ -1,15 +1,20 @@
-# MedFusion AI - Multi-Runtime Production Dockerfile (Node.js + Python + Tesseract)
-FROM node:20-bookworm-slim
+# MedFusion AI - Multi-Runtime Production Dockerfile
+# Based on Ubuntu 24.04 LTS (GLIBC 2.39 satisfies sqlite3 binary requirements)
+FROM ubuntu:24.04
 
-# Set environment
-ENV NODE_ENV=production \
+ENV DEBIAN_FRONTEND=noninteractive \
+    NODE_ENV=production \
     PORT=3000 \
     HOST=0.0.0.0 \
     PYTHON_PATH=python3 \
     TESSERACT_CMD=/usr/bin/tesseract
 
-# Install Python 3, pip, and Tesseract OCR engine
+# Install system dependencies, Python 3, Tesseract OCR, and build tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    gnupg \
+    build-essential \
     python3 \
     python3-pip \
     python3-venv \
@@ -17,6 +22,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     tesseract-ocr-eng \
     libgl1 \
     libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install official Node.js 20 LTS
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y --no-install-recommends nodejs \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
